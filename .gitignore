@@ -1,0 +1,14 @@
+﻿.superpowers/
+.worktrees/
+worktrees/
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+dist/
+*.egg-info/
+node_modules/
+web/dist/
+.pytest_cache/
+*.vscdb
+!tests/fixtures/*.vscdb
