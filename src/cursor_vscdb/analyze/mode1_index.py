@@ -61,6 +61,7 @@ def build_index(source_db: Path, index_path: Path, progress_cb=None) -> None:
         )
         idx.execute("CREATE INDEX ix_kv_category ON kv_meta(category)")
         idx.execute("CREATE INDEX ix_kv_composer ON kv_meta(composer_id)")
+        idx.execute("CREATE INDEX ix_kv_composer_time ON kv_meta(composer_last_updated_ms)")
         batch: list[tuple] = []
         n = 0
         for key, size in src.execute("SELECT key, length(value) FROM cursorDiskKV"):
