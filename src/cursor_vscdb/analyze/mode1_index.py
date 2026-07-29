@@ -15,6 +15,14 @@ class CategoryStat:
     total_bytes: int
 
 
+@dataclass
+class ComposerStat:
+    composer_id: str
+    row_count: int
+    total_bytes: int
+    last_updated_ms: int | None
+
+
 def build_index(source_db: Path, index_path: Path, progress_cb=None) -> None:
     index_path.parent.mkdir(parents=True, exist_ok=True)
     if index_path.exists():
@@ -22,13 +30,20 @@ def build_index(source_db: Path, index_path: Path, progress_cb=None) -> None:
     src = connect_readonly(source_db)
     idx = sqlite3.connect(index_path)
     try:
+        header_times = {
+            r[0]: r[1]
+            for r in src.execute(
+                "SELECT composerId, COALESCE(lastUpdatedAt, createdAt) FROM composerHeaders"
+            )
+        }
         idx.execute(
             """
             CREATE TABLE kv_meta (
               key TEXT PRIMARY KEY,
               category TEXT NOT NULL,
               composer_id TEXT,
-              size_bytes INTEGER NOT NULL
+              size_bytes INTEGER NOT NULL,
+              composer_last_updated_ms INTEGER
             )
             """
         )
@@ -50,11 +65,19 @@ def build_index(source_db: Path, index_path: Path, progress_cb=None) -> None:
         n = 0
         for key, size in src.execute("SELECT key, length(value) FROM cursorDiskKV"):
             info = categorize_key(str(key))
-            batch.append((info.key, info.category, info.composer_id, int(size or 0)))
+            batch.append(
+                (
+                    info.key,
+                    info.category,
+                    info.composer_id,
+                    int(size or 0),
+                    header_times.get(info.composer_id),
+                )
+            )
             n += 1
             if len(batch) >= 5000:
                 idx.executemany(
-                    "INSERT INTO kv_meta(key, category, composer_id, size_bytes) VALUES (?,?,?,?)",
+                    "INSERT INTO kv_meta(key, category, composer_id, size_bytes, composer_last_updated_ms) VALUES (?,?,?,?,?)",
                     batch,
                 )
                 idx.commit()
@@ -63,7 +86,7 @@ def build_index(source_db: Path, index_path: Path, progress_cb=None) -> None:
                     progress_cb(n)
         if batch:
             idx.executemany(
-                "INSERT INTO kv_meta(key, category, composer_id, size_bytes) VALUES (?,?,?,?)",
+                "INSERT INTO kv_meta(key, category, composer_id, size_bytes, composer_last_updated_ms) VALUES (?,?,?,?,?)",
                 batch,
             )
             idx.commit()
@@ -84,6 +107,28 @@ def category_stats(index_path: Path) -> list[CategoryStat]:
             """
         ).fetchall()
         return [CategoryStat(category=r[0], row_count=r[1], total_bytes=r[2]) for r in rows]
+    finally:
+        conn.close()
+
+
+def composer_stats(index_path: Path) -> list[ComposerStat]:
+    conn = sqlite3.connect(index_path)
+    try:
+        rows = conn.execute(
+            """
+            SELECT composer_id, COUNT(*), COALESCE(SUM(size_bytes),0), MAX(composer_last_updated_ms)
+            FROM kv_meta
+            WHERE composer_id IS NOT NULL
+            GROUP BY composer_id
+            ORDER BY SUM(size_bytes) DESC
+            """
+        ).fetchall()
+        return [
+            ComposerStat(
+                composer_id=r[0], row_count=r[1], total_bytes=r[2], last_updated_ms=r[3]
+            )
+            for r in rows
+        ]
     finally:
         conn.close()
 
