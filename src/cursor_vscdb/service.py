@@ -38,9 +38,20 @@ def run_scan(ctx: AppContext, progress_cb=None) -> None:
     build_index(ctx.db_path, ctx.index_path, progress_cb=progress_cb)
 
 
+def filter_has_criteria(filter: Filter) -> bool:
+    return bool(
+        filter.categories
+        or filter.composer_ids
+        or filter.older_than_ms is not None
+        or filter.newer_than_ms is not None
+    )
+
+
 def preview_clean(ctx: AppContext, filter: Filter) -> FilterEstimate:
     if not ctx.index_path.exists():
         raise FileNotFoundError("Index missing; run scan first")
+    if not filter_has_criteria(filter):
+        raise ValueError("Refusing empty filter; select category, composer, and/or time range")
     return estimate_filter(ctx.index_path, filter)
 
 
@@ -51,10 +62,13 @@ def apply_filter_copy(
     do_backup: bool = True,
     replace_original: bool = False,
 ) -> dict:
+    if not filter_has_criteria(filter):
+        raise ValueError("Refusing empty filter; select category, composer, and/or time range")
+    # Gate writes first (Level A requires do_backup=True)
+    assert_can_write(ctx.safety_level, backup_provided=do_backup)
     backup_path = None
     if do_backup:
         backup_path = backup_file(ctx.db_path, ctx.backup_dir)
-    assert_can_write(ctx.safety_level, backup_provided=backup_path is not None)
     keys = set(matching_keys(ctx.index_path, filter))
     composer_ids = set(filter.composer_ids)
     filter_copy_rebuild(
