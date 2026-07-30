@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react'
 import { getStatus, type DbStatus } from '../api'
+import { useI18n } from '../i18n/I18nContext'
 
 export default function Settings() {
+  const { t } = useI18n()
   const [status, setStatus] = useState<DbStatus | null>(null)
   const [error, setError] = useState<string | null>(null)
 
@@ -13,29 +15,31 @@ export default function Settings() {
 
   return (
     <div>
-      <h2>Settings</h2>
-      <p className="muted">Read-only path and safety configuration (v1).</p>
+      <h2>{t('settings.title')}</h2>
+      <p className="muted">{t('settings.hint')}</p>
 
       {error && <div className="error">{error}</div>}
 
       {status && (
         <div className="card">
           <dl>
-            <dt>Database path</dt>
+            <dt>{t('settings.dbPath')}</dt>
             <dd>{status.db_path}</dd>
-            <dt>Index path</dt>
-            <dd>{status.index_path ?? '(none)'}</dd>
-            <dt>Safety level</dt>
+            <dt>{t('settings.indexPath')}</dt>
+            <dd>{status.index_path ?? t('common.none')}</dd>
+            <dt>{t('settings.safetyLevel')}</dt>
             <dd>
-              <span className="badge badge-warn">Level {status.safety_level}</span>
+              <span className="badge badge-warn">
+                {t('settings.level', { level: status.safety_level })}
+              </span>
             </dd>
-            <dt>Database exists</dt>
-            <dd>{status.exists ? 'Yes' : 'No'}</dd>
+            <dt>{t('settings.dbExists')}</dt>
+            <dd>{status.exists ? t('common.yes') : t('common.no')}</dd>
           </dl>
         </div>
       )}
 
-      {!status && !error && <p>Loading…</p>}
+      {!status && !error && <p>{t('common.loading')}</p>}
     </div>
   )
 }

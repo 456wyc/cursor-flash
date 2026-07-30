@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react'
 import { formatBytes, getCategories, type CategoryStat } from '../api'
 import { useFilter } from '../FilterContext'
+import { useI18n } from '../i18n/I18nContext'
 
 export default function Categories() {
+  const { t } = useI18n()
   const { categories: selected, toggleCategory, setCategories } = useFilter()
   const [stats, setStats] = useState<CategoryStat[]>([])
   const [error, setError] = useState<string | null>(null)
@@ -25,32 +27,32 @@ export default function Categories() {
 
   return (
     <div>
-      <h2>Categories</h2>
-      <p className="muted">Select categories to include in the clean filter.</p>
+      <h2>{t('categories.title')}</h2>
+      <p className="muted">{t('categories.hint')}</p>
       {error && <div className="error">{error}</div>}
 
       <div className="actions" style={{ marginBottom: '1rem' }}>
         <button onClick={selectAll} disabled={loading || stats.length === 0}>
-          Select all
+          {t('common.selectAll')}
         </button>
         <button onClick={clearAll} disabled={loading}>
-          Clear
+          {t('common.clear')}
         </button>
-        <span className="muted">{selected.length} selected</span>
+        <span className="muted">{t('common.selected', { count: selected.length })}</span>
       </div>
 
       {loading ? (
-        <p>Loading…</p>
+        <p>{t('common.loading')}</p>
       ) : stats.length === 0 ? (
-        <p className="muted">No categories found. Run a scan from Overview first.</p>
+        <p className="muted">{t('categories.empty')}</p>
       ) : (
         <table className="list-table">
           <thead>
             <tr>
               <th style={{ width: 40 }} />
-              <th>Category</th>
-              <th>Rows</th>
-              <th>Size</th>
+              <th>{t('categories.category')}</th>
+              <th>{t('common.rows')}</th>
+              <th>{t('common.size')}</th>
             </tr>
           </thead>
           <tbody>

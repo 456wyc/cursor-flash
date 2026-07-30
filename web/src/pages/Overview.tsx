@@ -9,8 +9,10 @@ import {
   type DbStatus,
   type Job,
 } from '../api'
+import { useI18n } from '../i18n/I18nContext'
 
 export default function Overview() {
+  const { t } = useI18n()
   const [status, setStatus] = useState<DbStatus | null>(null)
   const [categories, setCategories] = useState<CategoryStat[]>([])
   const [error, setError] = useState<string | null>(null)
@@ -48,7 +50,7 @@ export default function Overview() {
       const { job_id } = await startScan()
       const finished = await pollJob(job_id, setJob)
       if (finished.status === 'error') {
-        throw new Error(finished.error ?? 'Scan failed')
+        throw new Error(finished.error ?? t('overview.scanFailed'))
       }
       await loadStatus()
       await loadCategories()
@@ -63,40 +65,40 @@ export default function Overview() {
 
   return (
     <div>
-      <h2>Overview</h2>
+      <h2>{t('overview.title')}</h2>
       {error && <div className="error">{error}</div>}
 
       <div className="card">
         <dl>
-          <dt>Database size</dt>
+          <dt>{t('overview.dbSize')}</dt>
           <dd>{sizeGb} GB</dd>
-          <dt>Cursor running</dt>
+          <dt>{t('overview.cursorRunning')}</dt>
           <dd>
             {status === null ? (
               '…'
             ) : status.cursor_running ? (
-              <span className="badge badge-warn">Yes</span>
+              <span className="badge badge-warn">{t('common.yes')}</span>
             ) : (
-              <span className="badge badge-ok">No</span>
+              <span className="badge badge-ok">{t('common.no')}</span>
             )}
           </dd>
-          <dt>Index stale</dt>
+          <dt>{t('overview.indexStale')}</dt>
           <dd>
             {status === null ? (
               '…'
             ) : status.index_stale ? (
-              <span className="badge badge-warn">Yes — scan recommended</span>
+              <span className="badge badge-warn">{t('overview.indexStaleYes')}</span>
             ) : (
-              <span className="badge badge-ok">No</span>
+              <span className="badge badge-ok">{t('common.no')}</span>
             )}
           </dd>
         </dl>
         <div className="actions">
           <button className="primary" onClick={handleScan} disabled={scanning}>
-            {scanning ? 'Scanning…' : 'Scan Index'}
+            {scanning ? t('overview.scanning') : t('overview.scan')}
           </button>
           <button onClick={loadStatus} disabled={scanning}>
-            Refresh
+            {t('common.refresh')}
           </button>
         </div>
         {scanning && job && (
@@ -108,13 +110,13 @@ export default function Overview() {
 
       {categories.length > 0 && (
         <div className="card">
-          <h3 style={{ marginTop: 0 }}>Categories summary</h3>
+          <h3 style={{ marginTop: 0 }}>{t('overview.categoriesSummary')}</h3>
           <div className="summary-grid">
             {categories.map((c) => (
               <div key={c.category} className="summary-item">
                 <strong>{c.category}</strong>
                 <span>
-                  {c.row_count.toLocaleString()} rows · {formatBytes(c.total_bytes)}
+                  {c.row_count.toLocaleString()} · {formatBytes(c.total_bytes)}
                 </span>
               </div>
             ))}
@@ -123,7 +125,7 @@ export default function Overview() {
       )}
 
       {categories.length === 0 && status && !status.index_stale && status.index_path && (
-        <p className="muted">Run scan to refresh category summary, or index may be empty.</p>
+        <p className="muted">{t('overview.emptyHint')}</p>
       )}
     </div>
   )

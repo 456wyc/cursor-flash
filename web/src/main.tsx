@@ -3,14 +3,17 @@ import { createRoot } from 'react-dom/client'
 import { BrowserRouter } from 'react-router-dom'
 import App from './App'
 import { FilterProvider } from './FilterContext'
+import { I18nProvider } from './i18n/I18nContext'
 import './styles.css'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <BrowserRouter>
-      <FilterProvider>
-        <App />
-      </FilterProvider>
+      <I18nProvider>
+        <FilterProvider>
+          <App />
+        </FilterProvider>
+      </I18nProvider>
     </BrowserRouter>
   </StrictMode>,
 )

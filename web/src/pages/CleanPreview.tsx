@@ -8,10 +8,12 @@ import {
   type PreviewResult,
 } from '../api'
 import { useFilter } from '../FilterContext'
+import { useI18n } from '../i18n/I18nContext'
 
 const DEFAULT_DEST = 'E:/cursor-vscdb-tool/new-state.vscdb'
 
 export default function CleanPreview() {
+  const { t } = useI18n()
   const { toPayload } = useFilter()
   const [preview, setPreview] = useState<PreviewResult | null>(null)
   const [destDb, setDestDb] = useState(DEFAULT_DEST)
@@ -52,9 +54,11 @@ export default function CleanPreview() {
       )
       const finished = await pollJob(job_id, setJob)
       if (finished.status === 'error') {
-        throw new Error(finished.error ?? 'Rebuild failed')
+        throw new Error(finished.error ?? t('preview.rebuildFailed'))
       }
-      setSuccess(`Rebuild complete. Result: ${JSON.stringify(finished.result)}`)
+      setSuccess(
+        t('preview.rebuildComplete', { result: JSON.stringify(finished.result) }),
+      )
     } catch (e) {
       setError(e instanceof Error ? e.message : String(e))
     } finally {
@@ -64,36 +68,34 @@ export default function CleanPreview() {
 
   return (
     <div>
-      <h2>Clean Preview</h2>
-      <p className="muted">
-        Preview how many rows and bytes match the current filter, then run rebuild.
-      </p>
+      <h2>{t('preview.title')}</h2>
+      <p className="muted">{t('preview.hint')}</p>
 
       {error && <div className="error">{error}</div>}
       {success && <div className="success">{success}</div>}
 
       <div className="actions">
         <button className="primary" onClick={handlePreview} disabled={loading || rebuilding}>
-          {loading ? 'Loading preview…' : 'Preview clean'}
+          {loading ? t('preview.previewLoading') : t('preview.previewBtn')}
         </button>
       </div>
 
       {preview && (
         <div className="card" style={{ marginTop: '1rem' }}>
           <dl>
-            <dt>Matching rows</dt>
+            <dt>{t('preview.matchingRows')}</dt>
             <dd>{preview.row_count.toLocaleString()}</dd>
-            <dt>Total bytes</dt>
+            <dt>{t('preview.totalBytes')}</dt>
             <dd>{formatBytes(preview.total_bytes)}</dd>
           </dl>
         </div>
       )}
 
       <div className="card" style={{ marginTop: '1rem' }}>
-        <h3 style={{ marginTop: 0 }}>Rebuild options</h3>
+        <h3 style={{ marginTop: 0 }}>{t('preview.rebuildOptions')}</h3>
 
         <div className="form-row">
-          <label htmlFor="dest-db">Destination DB path</label>
+          <label htmlFor="dest-db">{t('preview.destDb')}</label>
           <input
             id="dest-db"
             type="text"
@@ -109,7 +111,7 @@ export default function CleanPreview() {
               checked={replaceOriginal}
               onChange={(e) => setReplaceOriginal(e.target.checked)}
             />
-            Replace original database
+            {t('preview.replaceOriginal')}
           </label>
         </div>
 
@@ -120,7 +122,7 @@ export default function CleanPreview() {
               checked={doBackup}
               onChange={(e) => setDoBackup(e.target.checked)}
             />
-            Create backup before rebuild
+            {t('preview.doBackup')}
           </label>
         </div>
 
@@ -130,7 +132,7 @@ export default function CleanPreview() {
             onClick={handleRebuild}
             disabled={rebuilding || !destDb.trim()}
           >
-            {rebuilding ? 'Rebuilding…' : 'Start rebuild'}
+            {rebuilding ? t('preview.rebuilding') : t('preview.startRebuild')}
           </button>
         </div>
 

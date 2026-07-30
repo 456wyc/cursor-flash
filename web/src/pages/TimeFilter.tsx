@@ -1,6 +1,8 @@
 import { useFilter } from '../FilterContext'
+import { useI18n } from '../i18n/I18nContext'
 
 export default function TimeFilter() {
+  const { t } = useI18n()
   const { olderThanMs, setOlderThanMs } = useFilter()
 
   const dateValue =
@@ -28,14 +30,12 @@ export default function TimeFilter() {
 
   return (
     <div>
-      <h2>Time Filter</h2>
-      <p className="muted">
-        Delete entries older than the specified date. Leave empty to skip time filtering.
-      </p>
+      <h2>{t('time.title')}</h2>
+      <p className="muted">{t('time.hint')}</p>
 
       <div className="card">
         <div className="form-row">
-          <label htmlFor="older-date">Older than (date)</label>
+          <label htmlFor="older-date">{t('time.olderDate')}</label>
           <input
             id="older-date"
             type="date"
@@ -45,11 +45,11 @@ export default function TimeFilter() {
         </div>
 
         <div className="form-row">
-          <label htmlFor="older-ms">Older than (ms timestamp)</label>
+          <label htmlFor="older-ms">{t('time.olderMs')}</label>
           <input
             id="older-ms"
             type="number"
-            placeholder="Unix ms, e.g. 1700000000000"
+            placeholder={t('time.msPlaceholder')}
             value={olderThanMs ?? ''}
             onChange={(e) => handleMsChange(e.target.value)}
           />
@@ -57,8 +57,10 @@ export default function TimeFilter() {
 
         {olderThanMs !== null && (
           <p className="muted">
-            Current filter: entries before{' '}
-            <strong>{new Date(olderThanMs).toLocaleString()}</strong> ({olderThanMs} ms)
+            {t('time.currentFilter', {
+              date: new Date(olderThanMs).toLocaleString(),
+              ms: olderThanMs,
+            })}
           </p>
         )}
       </div>

@@ -1,7 +1,9 @@
 import { useState } from 'react'
 import { exportReport } from '../api'
+import { useI18n } from '../i18n/I18nContext'
 
 export default function ExportPage() {
+  const { t } = useI18n()
   const [outDir, setOutDir] = useState('E:/cursor-vscdb-tool/export')
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState<string | null>(null)
@@ -13,7 +15,7 @@ export default function ExportPage() {
     setSuccess(null)
     try {
       const result = await exportReport(outDir)
-      setSuccess(`Report exported to: ${result.out_dir}`)
+      setSuccess(t('export.success', { path: result.out_dir }))
     } catch (e) {
       setError(e instanceof Error ? e.message : String(e))
     } finally {
@@ -23,15 +25,15 @@ export default function ExportPage() {
 
   return (
     <div>
-      <h2>Export</h2>
-      <p className="muted">Export index statistics report to a directory.</p>
+      <h2>{t('export.title')}</h2>
+      <p className="muted">{t('export.hint')}</p>
 
       {error && <div className="error">{error}</div>}
       {success && <div className="success">{success}</div>}
 
       <div className="card">
         <div className="form-row">
-          <label htmlFor="out-dir">Output directory</label>
+          <label htmlFor="out-dir">{t('export.outDir')}</label>
           <input
             id="out-dir"
             type="text"
@@ -46,7 +48,7 @@ export default function ExportPage() {
             onClick={handleExport}
             disabled={loading || !outDir.trim()}
           >
-            {loading ? 'Exporting…' : 'Export report'}
+            {loading ? t('export.exporting') : t('export.exportBtn')}
           </button>
         </div>
       </div>

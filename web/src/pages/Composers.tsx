@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react'
 import { formatBytes, getComposers, type ComposerStat } from '../api'
 import { useFilter } from '../FilterContext'
+import { useI18n } from '../i18n/I18nContext'
 
 export default function Composers() {
+  const { t } = useI18n()
   const { composerIds: selected, toggleComposerId, setComposerIds } = useFilter()
   const [stats, setStats] = useState<ComposerStat[]>([])
   const [error, setError] = useState<string | null>(null)
@@ -25,33 +27,33 @@ export default function Composers() {
 
   return (
     <div>
-      <h2>Composers</h2>
-      <p className="muted">Select composer IDs to include in the clean filter.</p>
+      <h2>{t('composers.title')}</h2>
+      <p className="muted">{t('composers.hint')}</p>
       {error && <div className="error">{error}</div>}
 
       <div className="actions" style={{ marginBottom: '1rem' }}>
         <button onClick={selectAll} disabled={loading || stats.length === 0}>
-          Select all
+          {t('common.selectAll')}
         </button>
         <button onClick={clearAll} disabled={loading}>
-          Clear
+          {t('common.clear')}
         </button>
-        <span className="muted">{selected.length} selected</span>
+        <span className="muted">{t('common.selected', { count: selected.length })}</span>
       </div>
 
       {loading ? (
-        <p>Loading…</p>
+        <p>{t('common.loading')}</p>
       ) : stats.length === 0 ? (
-        <p className="muted">No composers found. Run a scan from Overview first.</p>
+        <p className="muted">{t('composers.empty')}</p>
       ) : (
         <table className="list-table">
           <thead>
             <tr>
               <th style={{ width: 40 }} />
-              <th>Composer ID</th>
-              <th>Rows</th>
-              <th>Size</th>
-              <th>Last updated</th>
+              <th>{t('composers.composerId')}</th>
+              <th>{t('common.rows')}</th>
+              <th>{t('common.size')}</th>
+              <th>{t('composers.lastUpdated')}</th>
             </tr>
           </thead>
           <tbody>
