@@ -1,5 +1,7 @@
 # Cursor Flash
 
+**English** | [中文](README.zh-CN.md)
+
 Inspect and selectively clean Cursor `state.vscdb` — the SQLite database that stores chat bubbles, agent cache, composer sessions, and other Cursor global state. When this file grows to tens of GB it can fill your system drive; this tool helps you **see what is using space** and **reclaim disk safely** via filter-copy rebuild.
 
 ## What it does
