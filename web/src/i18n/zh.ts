@@ -42,6 +42,7 @@ const zh: Messages = {
     title: '按类型',
     hint: '勾选要纳入清理过滤条件的数据类型。',
     category: '类型',
+    description: '说明',
     empty: '暂无类别数据。请先在「总览」页执行扫描。',
   },
   composers: {
@@ -91,6 +92,21 @@ const zh: Messages = {
     exportBtn: '导出报告',
     exporting: '导出中…',
     success: '报告已导出到：{path}',
+  },
+  categoryDesc: {
+    bubbleId: '聊天气泡/消息正文，通常占空间最大；清理后历史对话内容会丢失。',
+    agentKv: 'Agent 运行时缓存与 blob，多为可再生缓存，风险较低。',
+    'composer.content': 'Composer 内容块（消息片段/附件类数据）。',
+    checkpointId: '会话检查点，用于回滚/恢复某次编辑状态。',
+    composerData: '会话主体元数据与结构，删后整段会话可能无法正常打开。',
+    ofsContent: '打开文件快照/上下文内容缓存。',
+    codeBlockPartialInlineDiffFates: '代码块局部 inline diff 的处理结果缓存。',
+    codeBlockDiff: '代码块 diff 数据。',
+    inlineDiff: '内联 diff 预览数据。',
+    messageRequestContext: '发送消息时附带的请求上下文。',
+    composerVirtualRowHeights: '会话列表虚拟滚动行高缓存，可再生成。',
+    other: '未归类的其他键，清理前请确认用途。',
+    unknown: '未知类型：{category}',
   },
 }
 

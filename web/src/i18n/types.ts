@@ -46,6 +46,7 @@ export type Messages = {
     title: string
     hint: string
     category: string
+    description: string
     empty: string
   }
   composers: {
@@ -96,4 +97,6 @@ export type Messages = {
     exporting: string
     success: string
   }
+  /** Human-readable explanations keyed by catalog category id */
+  categoryDesc: Record<string, string>
 }

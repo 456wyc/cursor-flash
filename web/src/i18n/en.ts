@@ -42,6 +42,7 @@ const en: Messages = {
     title: 'Categories',
     hint: 'Select categories to include in the clean filter.',
     category: 'Category',
+    description: 'Description',
     empty: 'No categories found. Run a scan from Overview first.',
   },
   composers: {
@@ -91,6 +92,21 @@ const en: Messages = {
     exportBtn: 'Export report',
     exporting: 'Exporting…',
     success: 'Report exported to: {path}',
+  },
+  categoryDesc: {
+    bubbleId: 'Chat bubbles / message bodies — usually the largest; deleting removes conversation history.',
+    agentKv: 'Agent runtime cache and blobs; mostly regenerable, lower risk.',
+    'composer.content': 'Composer content chunks (message fragments / attachments).',
+    checkpointId: 'Session checkpoints used to restore an edit state.',
+    composerData: 'Composer session payloads; deleting may break opening those chats.',
+    ofsContent: 'Open-file snapshot / context content cache.',
+    codeBlockPartialInlineDiffFates: 'Cached outcomes for partial inline code-block diffs.',
+    codeBlockDiff: 'Code-block diff payloads.',
+    inlineDiff: 'Inline diff preview data.',
+    messageRequestContext: 'Request context attached when sending a message.',
+    composerVirtualRowHeights: 'Virtualized chat list row-height cache; regenerable.',
+    other: 'Uncategorized keys — review before deleting.',
+    unknown: 'Unknown category: {category}',
   },
 }
 

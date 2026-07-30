@@ -4,7 +4,7 @@ import { useFilter } from '../FilterContext'
 import { useI18n } from '../i18n/I18nContext'
 
 export default function Categories() {
-  const { t } = useI18n()
+  const { t, describeCategory } = useI18n()
   const { categories: selected, toggleCategory, setCategories } = useFilter()
   const [stats, setStats] = useState<CategoryStat[]>([])
   const [error, setError] = useState<string | null>(null)
@@ -51,6 +51,7 @@ export default function Categories() {
             <tr>
               <th style={{ width: 40 }} />
               <th>{t('categories.category')}</th>
+              <th>{t('categories.description')}</th>
               <th>{t('common.rows')}</th>
               <th>{t('common.size')}</th>
             </tr>
@@ -66,6 +67,7 @@ export default function Categories() {
                   />
                 </td>
                 <td>{s.category}</td>
+                <td className="muted">{describeCategory(s.category)}</td>
                 <td>{s.row_count.toLocaleString()}</td>
                 <td>{formatBytes(s.total_bytes)}</td>
               </tr>

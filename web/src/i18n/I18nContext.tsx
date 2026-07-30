@@ -42,6 +42,7 @@ type I18nValue = {
   locale: Locale
   setLocale: (locale: Locale) => void
   t: (key: string, vars?: Record<string, string | number>) => string
+  describeCategory: (category: string) => string
 }
 
 const I18nContext = createContext<I18nValue | null>(null)
@@ -70,7 +71,22 @@ export function I18nProvider({ children }: { children: ReactNode }) {
     [locale],
   )
 
-  const value = useMemo(() => ({ locale, setLocale, t }), [locale, setLocale, t])
+  const describeCategory = useCallback(
+    (category: string) => {
+      const map = catalogs[locale].categoryDesc
+      const fallback = catalogs.en.categoryDesc
+      const desc = map[category] ?? fallback[category]
+      if (desc) return desc
+      const unknown = map.unknown ?? fallback.unknown ?? category
+      return interpolate(unknown, { category })
+    },
+    [locale],
+  )
+
+  const value = useMemo(
+    () => ({ locale, setLocale, t, describeCategory }),
+    [locale, setLocale, t, describeCategory],
+  )
 
   return <I18nContext.Provider value={value}>{children}</I18nContext.Provider>
 }

@@ -12,7 +12,7 @@ import {
 import { useI18n } from '../i18n/I18nContext'
 
 export default function Overview() {
-  const { t } = useI18n()
+  const { t, describeCategory } = useI18n()
   const [status, setStatus] = useState<DbStatus | null>(null)
   const [categories, setCategories] = useState<CategoryStat[]>([])
   const [error, setError] = useState<string | null>(null)
@@ -113,11 +113,12 @@ export default function Overview() {
           <h3 style={{ marginTop: 0 }}>{t('overview.categoriesSummary')}</h3>
           <div className="summary-grid">
             {categories.map((c) => (
-              <div key={c.category} className="summary-item">
+              <div key={c.category} className="summary-item" title={describeCategory(c.category)}>
                 <strong>{c.category}</strong>
                 <span>
                   {c.row_count.toLocaleString()} · {formatBytes(c.total_bytes)}
                 </span>
+                <p className="summary-desc">{describeCategory(c.category)}</p>
               </div>
             ))}
           </div>
