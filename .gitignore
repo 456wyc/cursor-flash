@@ -4,8 +4,10 @@ worktrees/
 __pycache__/
 *.py[cod]
 .venv/
+.venv-build/
 venv/
 dist/
+build/
 *.egg-info/
 node_modules/
 web/dist/

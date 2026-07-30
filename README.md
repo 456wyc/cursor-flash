@@ -111,6 +111,8 @@ uvicorn cursor_flash.api.app:app --host 127.0.0.1 --port 8787
 
 The desktop shell is a thin **pywebview** window around the same FastAPI + React UI (no separate GUI rewrite).
 
+### Run from source
+
 ```bash
 pip install -e ".[desktop]"
 cd web && npm install && npm run build
@@ -120,12 +122,23 @@ cursor-flash-desktop
 
 Options: `--port`, `--width`, `--height`, `--db`, `--index`, `--backup-dir`.
 
+### Windows release build
+
+```bash
+python scripts/build_desktop.py
+# → dist/CursorFlash.exe
+# → dist/CursorFlash-windows-x64-vX.Y.Z.zip
+```
+
+Requires Node.js, Python 3.11+, and Edge WebView2 (usually preinstalled on Windows 10/11).
+
 ## Project layout
 
 ```text
 src/cursor_flash/   Python core, FastAPI app, Typer CLI, desktop launcher
 web/                React + Vite dashboard
-scripts/            helpers (sync_web_dist.py)
+packaging/          PyInstaller spec
+scripts/            sync_web_dist.py, build_desktop.py
 tests/              pytest fixtures and integration tests
 ```
 
