@@ -10,6 +10,8 @@ interface FilterState {
   setComposerIds: (ids: string[]) => void
   toggleComposerId: (id: string) => void
   setOlderThanMs: (ms: number | null) => void
+  clearAll: () => void
+  hasCriteria: boolean
   toPayload: () => FilterPayload
 }
 
@@ -20,14 +22,23 @@ export function FilterProvider({ children }: { children: ReactNode }) {
   const [composerIds, setComposerIds] = useState<string[]>([])
   const [olderThanMs, setOlderThanMs] = useState<number | null>(null)
 
+  const hasCriteria =
+    categories.length > 0 || composerIds.length > 0 || olderThanMs !== null
+
   const value = useMemo<FilterState>(
     () => ({
       categories,
       composerIds,
       olderThanMs,
+      hasCriteria,
       setCategories,
       setComposerIds,
       setOlderThanMs,
+      clearAll: () => {
+        setCategories([])
+        setComposerIds([])
+        setOlderThanMs(null)
+      },
       toggleCategory: (cat) =>
         setCategories((prev) =>
           prev.includes(cat) ? prev.filter((c) => c !== cat) : [...prev, cat],
@@ -42,7 +53,7 @@ export function FilterProvider({ children }: { children: ReactNode }) {
         older_than_ms: olderThanMs,
       }),
     }),
-    [categories, composerIds, olderThanMs],
+    [categories, composerIds, olderThanMs, hasCriteria],
   )
 
   return <FilterContext.Provider value={value}>{children}</FilterContext.Provider>

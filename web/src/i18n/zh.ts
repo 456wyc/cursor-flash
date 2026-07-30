@@ -65,6 +65,21 @@ const zh: Messages = {
   preview: {
     title: '清理预览',
     hint: '先预览当前过滤条件匹配的行数与体积，再执行跨盘重建。',
+    hintCombined:
+      '可同时按「类型 ∩ 会话 ∩ 时间」组合筛选（条件之间为并且关系）。至少选择一类条件后才能预览/清理。',
+    combinedFilter: '组合筛选条件',
+    andLogic: '已选条件会同时生效：匹配必须满足全部勾选维度（AND）。未勾选的维度表示不限制。',
+    clearFilter: '清空条件',
+    anyCategory: '不限类型',
+    anyComposer: '不限会话',
+    anyTime: '不限时间',
+    beforeDate: '早于 {date}',
+    pickCategories: '① 选择类型',
+    pickComposers: '② 选择会话',
+    pickTime: '③ 选择时间（历史）',
+    searchComposer: '搜索会话 ID…',
+    timeHint: '只清理该日期之前的数据；留空表示不按时间过滤。',
+    needCriteria: '请至少选择类型、会话或时间中的一项。',
     previewBtn: '预览清理',
     previewLoading: '正在预览…',
     matchingRows: '匹配行数',
@@ -77,6 +92,11 @@ const zh: Messages = {
     rebuilding: '重建中…',
     rebuildComplete: '重建完成。结果：{result}',
     rebuildFailed: '重建失败',
+  },
+  filterBar: {
+    empty: '当前无筛选条件 — 可在「按类型 / 按会话 / 按时间」或「清理预览」中组合选择。',
+    active: '当前筛选',
+    andHint: 'AND 组合',
   },
   settings: {
     title: '设置',

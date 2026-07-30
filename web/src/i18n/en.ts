@@ -65,6 +65,22 @@ const en: Messages = {
   preview: {
     title: 'Clean Preview',
     hint: 'Preview how many rows and bytes match the current filter, then run rebuild.',
+    hintCombined:
+      'Combine Category ∩ Composer ∩ Time filters (AND). At least one criterion is required before preview/clean.',
+    combinedFilter: 'Combined filters',
+    andLogic:
+      'Selected dimensions apply together (AND). Leaving a dimension empty means “no restriction”.',
+    clearFilter: 'Clear filters',
+    anyCategory: 'Any category',
+    anyComposer: 'Any composer',
+    anyTime: 'Any time',
+    beforeDate: 'Before {date}',
+    pickCategories: '① Categories',
+    pickComposers: '② Composers',
+    pickTime: '③ Time (history)',
+    searchComposer: 'Search composer ID…',
+    timeHint: 'Only entries older than this date. Leave empty to skip time filtering.',
+    needCriteria: 'Select at least one of category, composer, or time.',
     previewBtn: 'Preview clean',
     previewLoading: 'Loading preview…',
     matchingRows: 'Matching rows',
@@ -77,6 +93,11 @@ const en: Messages = {
     rebuilding: 'Rebuilding…',
     rebuildComplete: 'Rebuild complete. Result: {result}',
     rebuildFailed: 'Rebuild failed',
+  },
+  filterBar: {
+    empty: 'No active filters — combine them under Categories / Composers / Time or Clean Preview.',
+    active: 'Active filter',
+    andHint: 'AND',
   },
   settings: {
     title: 'Settings',

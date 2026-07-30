@@ -7,7 +7,46 @@ import CleanPreview from './pages/CleanPreview'
 import Settings from './pages/Settings'
 import ExportPage from './pages/ExportPage'
 import { useI18n } from './i18n/I18nContext'
+import { useFilter } from './FilterContext'
 import type { Locale } from './i18n/types'
+
+function FilterBar() {
+  const { t } = useI18n()
+  const { categories, composerIds, olderThanMs, hasCriteria, clearAll } = useFilter()
+
+  if (!hasCriteria) {
+    return (
+      <div className="filter-bar muted">
+        {t('filterBar.empty')}
+      </div>
+    )
+  }
+
+  const parts: string[] = []
+  if (categories.length) {
+    parts.push(`${t('nav.categories')}: ${categories.join(', ')}`)
+  }
+  if (composerIds.length) {
+    parts.push(`${t('nav.composers')}: ${composerIds.length}`)
+  }
+  if (olderThanMs !== null) {
+    parts.push(
+      `${t('nav.time')}: ≤ ${new Date(olderThanMs).toLocaleDateString()}`,
+    )
+  }
+
+  return (
+    <div className="filter-bar">
+      <span>
+        <strong>{t('filterBar.active')}</strong> {parts.join(' · ')}
+        <span className="muted"> ({t('filterBar.andHint')})</span>
+      </span>
+      <button type="button" onClick={clearAll}>
+        {t('preview.clearFilter')}
+      </button>
+    </div>
+  )
+}
 
 export default function App() {
   const { t, locale, setLocale } = useI18n()
@@ -50,6 +89,7 @@ export default function App() {
           </NavLink>
         ))}
       </nav>
+      <FilterBar />
       <main className="main">
         <Routes>
           <Route path="/" element={<Overview />} />

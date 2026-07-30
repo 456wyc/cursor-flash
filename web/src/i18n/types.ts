@@ -69,6 +69,20 @@ export type Messages = {
   preview: {
     title: string
     hint: string
+    hintCombined: string
+    combinedFilter: string
+    andLogic: string
+    clearFilter: string
+    anyCategory: string
+    anyComposer: string
+    anyTime: string
+    beforeDate: string
+    pickCategories: string
+    pickComposers: string
+    pickTime: string
+    searchComposer: string
+    timeHint: string
+    needCriteria: string
     previewBtn: string
     previewLoading: string
     matchingRows: string
@@ -81,6 +95,11 @@ export type Messages = {
     rebuilding: string
     rebuildComplete: string
     rebuildFailed: string
+  }
+  filterBar: {
+    empty: string
+    active: string
+    andHint: string
   }
   settings: {
     title: string

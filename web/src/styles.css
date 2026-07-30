@@ -303,3 +303,105 @@ button.primary:hover:not(:disabled) {
   font-family: ui-monospace, Consolas, monospace;
   font-size: 0.9em;
 }
+
+.filter-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  padding: 0.55rem 0.75rem;
+  margin-bottom: 1rem;
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 0.9em;
+}
+
+.filter-card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.filter-summary {
+  display: grid;
+  gap: 0.35rem;
+  margin: 0.75rem 0 1rem;
+  padding: 0.65rem 0.75rem;
+  background: #f4f4f4;
+  border-radius: 4px;
+  font-size: 0.9em;
+}
+
+.filter-panels {
+  display: grid;
+  gap: 1rem;
+}
+
+.filter-panel h4 {
+  margin: 0 0 0.5rem;
+  font-size: 0.95rem;
+}
+
+.check-list {
+  max-height: 220px;
+  overflow: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background: #fff;
+}
+
+.check-list-tall {
+  max-height: 280px;
+}
+
+.check-row {
+  display: flex;
+  gap: 0.55rem;
+  align-items: flex-start;
+  padding: 0.45rem 0.6rem;
+  border-bottom: 1px solid #eee;
+  cursor: pointer;
+}
+
+.check-row:last-child {
+  border-bottom: none;
+}
+
+.check-row:hover {
+  background: #fafafa;
+}
+
+.check-row input {
+  margin-top: 0.2rem;
+}
+
+.check-main {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 0;
+}
+
+.check-title {
+  font-weight: 600;
+  color: #222;
+}
+
+.check-title.mono,
+.mono {
+  font-family: ui-monospace, Consolas, monospace;
+  font-size: 0.85em;
+  word-break: break-all;
+}
+
+.search-input {
+  width: 100%;
+  margin-bottom: 0.5rem;
+  padding: 0.4rem 0.55rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font: inherit;
+}
