@@ -17,17 +17,8 @@ export default function Overview() {
   const [categories, setCategories] = useState<CategoryStat[]>([])
   const [error, setError] = useState<string | null>(null)
   const [scanning, setScanning] = useState(false)
+  const [loading, setLoading] = useState(true)
   const [job, setJob] = useState<Job | null>(null)
-
-  const loadStatus = useCallback(async () => {
-    try {
-      setError(null)
-      const s = await getStatus()
-      setStatus(s)
-    } catch (e) {
-      setError(e instanceof Error ? e.message : String(e))
-    }
-  }, [])
 
   const loadCategories = useCallback(async () => {
     try {
@@ -38,9 +29,27 @@ export default function Overview() {
     }
   }, [])
 
+  const refresh = useCallback(async () => {
+    try {
+      setError(null)
+      const s = await getStatus()
+      setStatus(s)
+      if (s.index_path) {
+        await loadCategories()
+      } else {
+        setCategories([])
+      }
+    } catch (e) {
+      setError(e instanceof Error ? e.message : String(e))
+      setCategories([])
+    } finally {
+      setLoading(false)
+    }
+  }, [loadCategories])
+
   useEffect(() => {
-    loadStatus()
-  }, [loadStatus])
+    void refresh()
+  }, [refresh])
 
   async function handleScan() {
     setScanning(true)
@@ -52,8 +61,7 @@ export default function Overview() {
       if (finished.status === 'error') {
         throw new Error(finished.error ?? t('overview.scanFailed'))
       }
-      await loadStatus()
-      await loadCategories()
+      await refresh()
     } catch (e) {
       setError(e instanceof Error ? e.message : String(e))
     } finally {
@@ -92,12 +100,14 @@ export default function Overview() {
               <span className="badge badge-ok">{t('common.no')}</span>
             )}
           </dd>
+          <dt>{t('overview.indexPath')}</dt>
+          <dd className="path-value">{status?.index_path ?? t('common.none')}</dd>
         </dl>
         <div className="actions">
           <button className="primary" onClick={handleScan} disabled={scanning}>
             {scanning ? t('overview.scanning') : t('overview.scan')}
           </button>
-          <button onClick={loadStatus} disabled={scanning}>
+          <button onClick={() => void refresh()} disabled={scanning || loading}>
             {t('common.refresh')}
           </button>
         </div>
@@ -111,6 +121,11 @@ export default function Overview() {
       {categories.length > 0 && (
         <div className="card">
           <h3 style={{ marginTop: 0 }}>{t('overview.categoriesSummary')}</h3>
+          {status?.index_stale && (
+            <p className="muted" style={{ marginTop: 0 }}>
+              {t('overview.staleDataNote')}
+            </p>
+          )}
           <div className="summary-grid">
             {categories.map((c) => (
               <div key={c.category} className="summary-item" title={describeCategory(c.category)}>
@@ -125,7 +140,7 @@ export default function Overview() {
         </div>
       )}
 
-      {categories.length === 0 && status && !status.index_stale && status.index_path && (
+      {!loading && categories.length === 0 && (
         <p className="muted">{t('overview.emptyHint')}</p>
       )}
     </div>

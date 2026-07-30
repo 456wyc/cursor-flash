@@ -36,9 +36,11 @@ export type Messages = {
     cursorRunning: string
     indexStale: string
     indexStaleYes: string
+    indexPath: string
     scan: string
     scanning: string
     categoriesSummary: string
+    staleDataNote: string
     emptyHint: string
     scanFailed: string
   }

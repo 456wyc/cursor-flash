@@ -32,10 +32,12 @@ const zh: Messages = {
     cursorRunning: 'Cursor 是否在运行',
     indexStale: '索引是否过期',
     indexStaleYes: '是 — 建议重新扫描',
+    indexPath: '索引路径',
     scan: '扫描索引',
     scanning: '扫描中…',
     categoriesSummary: '类别占用摘要',
-    emptyHint: '请先在总览页扫描以刷新类别摘要；若索引为空也会显示此提示。',
+    staleDataNote: '以下为上次扫描结果；源库已变化，建议重新扫描后再清理。',
+    emptyHint: '暂无索引数据。请点击「扫描索引」生成类别摘要。',
     scanFailed: '扫描失败',
   },
   categories: {

@@ -32,10 +32,12 @@ const en: Messages = {
     cursorRunning: 'Cursor running',
     indexStale: 'Index stale',
     indexStaleYes: 'Yes — scan recommended',
+    indexPath: 'Index path',
     scan: 'Scan Index',
     scanning: 'Scanning…',
     categoriesSummary: 'Categories summary',
-    emptyHint: 'Run scan to refresh category summary, or index may be empty.',
+    staleDataNote: 'Showing the last scan; the source DB has changed — re-scan before cleaning.',
+    emptyHint: 'No index yet. Click “Scan Index” to build the category summary.',
     scanFailed: 'Scan failed',
   },
   categories: {
