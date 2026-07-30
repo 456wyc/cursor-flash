@@ -65,7 +65,12 @@ def build_index(source_db: Path, index_path: Path, progress_cb=None) -> None:
         batch: list[tuple] = []
         n = 0
         for key, size in src.execute("SELECT key, length(value) FROM cursorDiskKV"):
-            info = categorize_key(str(key))
+            if key is None:
+                continue
+            key_str = str(key)
+            if not key_str:
+                continue
+            info = categorize_key(key_str)
             batch.append(
                 (
                     info.key,
@@ -78,7 +83,7 @@ def build_index(source_db: Path, index_path: Path, progress_cb=None) -> None:
             n += 1
             if len(batch) >= 5000:
                 idx.executemany(
-                    "INSERT INTO kv_meta(key, category, composer_id, size_bytes, composer_last_updated_ms) VALUES (?,?,?,?,?)",
+                    "INSERT OR REPLACE INTO kv_meta(key, category, composer_id, size_bytes, composer_last_updated_ms) VALUES (?,?,?,?,?)",
                     batch,
                 )
                 idx.commit()
@@ -87,7 +92,7 @@ def build_index(source_db: Path, index_path: Path, progress_cb=None) -> None:
                     progress_cb(n)
         if batch:
             idx.executemany(
-                "INSERT INTO kv_meta(key, category, composer_id, size_bytes, composer_last_updated_ms) VALUES (?,?,?,?,?)",
+                "INSERT OR REPLACE INTO kv_meta(key, category, composer_id, size_bytes, composer_last_updated_ms) VALUES (?,?,?,?,?)",
                 batch,
             )
             idx.commit()
