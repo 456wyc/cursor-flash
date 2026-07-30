@@ -54,9 +54,27 @@ export type Messages = {
   composers: {
     title: string
     hint: string
+    hintDetail: string
     composerId: string
     lastUpdated: string
     empty: string
+    actions: string
+    viewDetail: string
+  }
+  composerDetail: {
+    title: string
+    back: string
+    notFound: string
+    workspace: string
+    mode: string
+    created: string
+    partialClean: string
+    partialHint: string
+    selectedEstimate: string
+    goClean: string
+    largestKeys: string
+    samplesHint: string
+    key: string
   }
   time: {
     title: string

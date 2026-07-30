@@ -50,9 +50,29 @@ const en: Messages = {
   composers: {
     title: 'Composers',
     hint: 'Select composer IDs to include in the clean filter.',
+    hintDetail:
+      'Select whole sessions, or open Detail to partially clean by category (e.g. bubbles only).',
     composerId: 'Composer ID',
     lastUpdated: 'Last updated',
     empty: 'No composers found. Run a scan from Overview first.',
+    actions: 'Actions',
+    viewDetail: 'View detail',
+  },
+  composerDetail: {
+    title: 'Composer detail',
+    back: '← Back to composers',
+    notFound: 'Composer not found in index.',
+    workspace: 'Workspace',
+    mode: 'Mode',
+    created: 'Created',
+    partialClean: 'Partial clean (by category)',
+    partialHint:
+      'Select only categories to delete. E.g. bubbleId clears chat text while keeping composerData. Preview here, or apply to Clean Preview to rebuild.',
+    selectedEstimate: '{count} categories selected · ~{size}',
+    goClean: 'Apply to Clean Preview',
+    largestKeys: 'Largest keys (sample)',
+    samplesHint: 'Largest keys in this session by size.',
+    key: 'Key',
   },
   time: {
     title: 'Time Filter',

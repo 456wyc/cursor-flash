@@ -2,6 +2,7 @@ import { NavLink, Route, Routes } from 'react-router-dom'
 import Overview from './pages/Overview'
 import Categories from './pages/Categories'
 import Composers from './pages/Composers'
+import ComposerDetail from './pages/ComposerDetail'
 import TimeFilter from './pages/TimeFilter'
 import CleanPreview from './pages/CleanPreview'
 import Settings from './pages/Settings'
@@ -95,6 +96,7 @@ export default function App() {
           <Route path="/" element={<Overview />} />
           <Route path="/categories" element={<Categories />} />
           <Route path="/composers" element={<Composers />} />
+          <Route path="/composers/:composerId" element={<ComposerDetail />} />
           <Route path="/time" element={<TimeFilter />} />
           <Route path="/preview" element={<CleanPreview />} />
           <Route path="/settings" element={<Settings />} />

@@ -50,9 +50,28 @@ const zh: Messages = {
   composers: {
     title: '按会话',
     hint: '勾选要纳入清理过滤条件的 Composer 会话。',
+    hintDetail: '可勾选整段会话，或点击「查看详情」按类型部分清理（例如只删 bubbleId，保留会话壳）。',
     composerId: '会话 ID',
     lastUpdated: '最近更新',
     empty: '暂无会话数据。请先在「总览」页执行扫描。',
+    actions: '操作',
+    viewDetail: '查看详情',
+  },
+  composerDetail: {
+    title: '会话详情',
+    back: '← 返回会话列表',
+    notFound: '索引中未找到该会话。',
+    workspace: '工作区',
+    mode: '模式',
+    created: '创建时间',
+    partialClean: '部分清理（按类型）',
+    partialHint:
+      '只勾选要删除的数据类型。例如仅选 bubbleId 可清聊天记录，保留 composerData 等结构。确认后可预览，或跳转到清理预览执行重建。',
+    selectedEstimate: '已选 {count} 类，估算约 {size}',
+    goClean: '应用到清理预览',
+    largestKeys: '最大条目抽样',
+    samplesHint: '按体积列出本会话中最大的若干 key，便于了解内容构成。',
+    key: 'Key',
   },
   time: {
     title: '按时间',

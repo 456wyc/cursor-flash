@@ -92,6 +92,28 @@ export function getComposers(): Promise<ComposerStat[]> {
   return apiFetch('/api/stats/composers')
 }
 
+export interface ComposerDetail {
+  composer_id: string
+  name: string | null
+  subtitle: string | null
+  workspace_id: string | null
+  unified_mode: string | null
+  created_at_ms: number | null
+  last_updated_ms: number | null
+  row_count: number
+  total_bytes: number
+  categories: CategoryStat[]
+  samples: { key: string; category: string; size_bytes: number }[]
+}
+
+export function getComposerDetail(
+  composerId: string,
+  sampleLimit = 30,
+): Promise<ComposerDetail> {
+  const params = new URLSearchParams({ sample_limit: String(sampleLimit) })
+  return apiFetch(`/api/composers/${encodeURIComponent(composerId)}?${params}`)
+}
+
 export function previewClean(filter: FilterPayload): Promise<PreviewResult> {
   return apiFetch('/api/clean/preview', {
     method: 'POST',

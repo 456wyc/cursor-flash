@@ -6,7 +6,7 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 
-from cursor_vscdb.analyze.mode1_index import category_stats, composer_stats
+from cursor_vscdb.analyze.mode1_index import category_stats, composer_detail, composer_stats
 from cursor_vscdb.jobs import create_job, get_job, run_in_background
 from cursor_vscdb.models import Filter, SafetyLevel
 from cursor_vscdb.service import AppContext, apply_filter_copy, export, get_status, preview_clean, run_scan
@@ -83,6 +83,32 @@ def create_app(ctx: AppContext) -> FastAPI:
         if not ctx.index_path.exists():
             raise HTTPException(400, "index missing")
         return [s.__dict__ for s in composer_stats(ctx.index_path)]
+
+    @app.get("/api/composers/{composer_id}")
+    def composer_detail_api(composer_id: str, sample_limit: int = 30):
+        if not ctx.index_path.exists():
+            raise HTTPException(400, "index missing")
+        detail = composer_detail(
+            ctx.index_path,
+            composer_id,
+            source_db=ctx.db_path,
+            sample_limit=max(0, min(sample_limit, 100)),
+        )
+        if detail is None:
+            raise HTTPException(404, "composer not found in index")
+        return {
+            "composer_id": detail.composer_id,
+            "name": detail.name,
+            "subtitle": detail.subtitle,
+            "workspace_id": detail.workspace_id,
+            "unified_mode": detail.unified_mode,
+            "created_at_ms": detail.created_at_ms,
+            "last_updated_ms": detail.last_updated_ms,
+            "row_count": detail.row_count,
+            "total_bytes": detail.total_bytes,
+            "categories": [c.__dict__ for c in detail.categories],
+            "samples": [s.__dict__ for s in detail.samples],
+        }
 
     @app.post("/api/clean/preview")
     def clean_preview(body: FilterIn):

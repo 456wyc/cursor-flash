@@ -139,6 +139,128 @@ def composer_stats(index_path: Path) -> list[ComposerStat]:
         conn.close()
 
 
+@dataclass
+class KeySample:
+    key: str
+    category: str
+    size_bytes: int
+
+
+@dataclass
+class ComposerDetail:
+    composer_id: str
+    row_count: int
+    total_bytes: int
+    last_updated_ms: int | None
+    categories: list[CategoryStat]
+    samples: list[KeySample]
+    name: str | None = None
+    subtitle: str | None = None
+    workspace_id: str | None = None
+    created_at_ms: int | None = None
+    unified_mode: str | None = None
+
+
+def _parse_header_meta(source_db: Path | None, composer_id: str) -> dict:
+    if source_db is None or not source_db.exists():
+        return {}
+    try:
+        src = connect_readonly(source_db)
+    except Exception:
+        return {}
+    try:
+        row = src.execute(
+            """
+            SELECT workspaceId, createdAt, lastUpdatedAt, value
+            FROM composerHeaders WHERE composerId=?
+            """,
+            (composer_id,),
+        ).fetchone()
+        if not row:
+            return {}
+        workspace_id, created_at, last_updated, value = row
+        meta: dict = {
+            "workspace_id": workspace_id,
+            "created_at_ms": created_at,
+            "last_updated_ms": last_updated,
+        }
+        if value is not None:
+            raw = value.decode("utf-8", errors="replace") if isinstance(value, bytes) else str(value)
+            try:
+                import json
+
+                data = json.loads(raw)
+                if isinstance(data, dict):
+                    meta["name"] = data.get("name")
+                    meta["subtitle"] = data.get("subtitle")
+                    meta["unified_mode"] = data.get("unifiedMode")
+                    if data.get("lastUpdatedAt") is not None:
+                        meta["last_updated_ms"] = data.get("lastUpdatedAt")
+                    if data.get("createdAt") is not None:
+                        meta["created_at_ms"] = data.get("createdAt")
+            except Exception:
+                pass
+        return meta
+    finally:
+        src.close()
+
+
+def composer_detail(
+    index_path: Path,
+    composer_id: str,
+    source_db: Path | None = None,
+    sample_limit: int = 30,
+) -> ComposerDetail | None:
+    conn = sqlite3.connect(index_path)
+    try:
+        totals = conn.execute(
+            """
+            SELECT COUNT(*), COALESCE(SUM(size_bytes),0), MAX(composer_last_updated_ms)
+            FROM kv_meta WHERE composer_id=?
+            """,
+            (composer_id,),
+        ).fetchone()
+        if not totals or totals[0] == 0:
+            return None
+        cats = conn.execute(
+            """
+            SELECT category, COUNT(*), COALESCE(SUM(size_bytes),0)
+            FROM kv_meta WHERE composer_id=?
+            GROUP BY category ORDER BY SUM(size_bytes) DESC
+            """,
+            (composer_id,),
+        ).fetchall()
+        samples = conn.execute(
+            """
+            SELECT key, category, size_bytes
+            FROM kv_meta WHERE composer_id=?
+            ORDER BY size_bytes DESC LIMIT ?
+            """,
+            (composer_id, sample_limit),
+        ).fetchall()
+    finally:
+        conn.close()
+
+    header = _parse_header_meta(source_db, composer_id)
+    return ComposerDetail(
+        composer_id=composer_id,
+        row_count=totals[0],
+        total_bytes=totals[1],
+        last_updated_ms=header.get("last_updated_ms", totals[2]),
+        categories=[
+            CategoryStat(category=r[0], row_count=r[1], total_bytes=r[2]) for r in cats
+        ],
+        samples=[
+            KeySample(key=r[0], category=r[1], size_bytes=r[2]) for r in samples
+        ],
+        name=header.get("name"),
+        subtitle=header.get("subtitle"),
+        workspace_id=header.get("workspace_id"),
+        created_at_ms=header.get("created_at_ms"),
+        unified_mode=header.get("unified_mode"),
+    )
+
+
 def is_index_stale(source_db: Path, index_path: Path) -> bool:
     if not index_path.exists() or not source_db.exists():
         return True
