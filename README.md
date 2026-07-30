@@ -97,16 +97,38 @@ Production web build:
 
 ```bash
 cd web && npm run build
+python scripts/sync_web_dist.py   # optional: copy into package web_dist/
 ```
+
+After a production build, a single uvicorn process can serve both API and UI:
+
+```bash
+uvicorn cursor_vscdb.api.app:app --host 127.0.0.1 --port 8787
+# open http://127.0.0.1:8787/
+```
+
+## Desktop app
+
+The desktop shell is a thin **pywebview** window around the same FastAPI + React UI (no separate GUI rewrite).
+
+```bash
+pip install -e ".[desktop]"
+cd web && npm install && npm run build
+cd .. && python scripts/sync_web_dist.py
+vscdb-desktop
+```
+
+Options: `--port`, `--width`, `--height`, `--db`, `--index`, `--backup-dir`.
 
 ## Project layout
 
 ```text
-src/cursor_vscdb/   Python core, FastAPI app, Typer CLI
+src/cursor_vscdb/   Python core, FastAPI app, Typer CLI, desktop launcher
 web/                React + Vite dashboard
+scripts/            helpers (sync_web_dist.py)
 tests/              pytest fixtures and integration tests
 ```
 
 ## Platform
 
-Windows-first (default paths, `Cursor.exe` process detection). Python 3.11+ required.
+Windows-first (default paths, `Cursor.exe` process detection). Python 3.11+ required. Desktop uses Edge WebView2 via pywebview.

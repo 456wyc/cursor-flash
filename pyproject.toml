@@ -18,9 +18,11 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = ["pytest>=8.0", "httpx>=0.27"]
+desktop = ["pywebview>=5.0"]
 
 [project.scripts]
 vscdb = "cursor_vscdb.cli:app"
+vscdb-desktop = "cursor_vscdb.desktop:app"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/cursor_vscdb"]

@@ -16,7 +16,7 @@ def test_status_and_scan(mini_db, tmp_path, monkeypatch):
         backup_dir=tmp_path / "bak",
         safety_level=SafetyLevel.B,
     )
-    client = TestClient(create_app(ctx))
+    client = TestClient(create_app(ctx, serve_web=False))
     r = client.get("/api/status")
     assert r.status_code == 200
     assert r.json()["exists"] is True

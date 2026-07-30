@@ -4,12 +4,15 @@ from pathlib import Path
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
 from cursor_vscdb.analyze.mode1_index import category_stats, composer_detail, composer_stats
 from cursor_vscdb.jobs import create_job, get_job, run_in_background
 from cursor_vscdb.models import Filter, SafetyLevel
 from cursor_vscdb.service import AppContext, apply_filter_copy, export, get_status, preview_clean, run_scan
+from cursor_vscdb.web_static import resolve_web_dist
 
 
 class FilterIn(BaseModel):
@@ -21,7 +24,28 @@ class FilterIn(BaseModel):
     include_unknown_time: bool = False
 
 
-def create_app(ctx: AppContext) -> FastAPI:
+def _mount_spa(app: FastAPI, dist: Path) -> None:
+    assets = dist / "assets"
+    if assets.is_dir():
+        app.mount("/assets", StaticFiles(directory=assets), name="assets")
+
+    index = dist / "index.html"
+
+    @app.get("/")
+    def spa_index():
+        return FileResponse(index)
+
+    @app.get("/{full_path:path}")
+    def spa_fallback(full_path: str):
+        if full_path.startswith("api/"):
+            raise HTTPException(404, "not found")
+        candidate = dist / full_path
+        if candidate.is_file():
+            return FileResponse(candidate)
+        return FileResponse(index)
+
+
+def create_app(ctx: AppContext, *, serve_web: bool = True) -> FastAPI:
     app = FastAPI(title="cursor-vscdb")
     app.add_middleware(
         CORSMiddleware,
@@ -136,6 +160,11 @@ def create_app(ctx: AppContext) -> FastAPI:
 
         run_in_background(job, _run)
         return {"job_id": job.id}
+
+    if serve_web:
+        dist = resolve_web_dist()
+        if dist is not None:
+            _mount_spa(app, dist)
 
     return app
 
