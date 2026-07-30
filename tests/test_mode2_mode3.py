@@ -1,9 +1,9 @@
 import json
 from pathlib import Path
 
-from cursor_vscdb.analyze.mode1_index import build_index, category_stats
-from cursor_vscdb.analyze.mode2_live import sample_category_counts
-from cursor_vscdb.analyze.mode3_export import export_report
+from cursor_flash.analyze.mode1_index import build_index, category_stats
+from cursor_flash.analyze.mode2_live import sample_category_counts
+from cursor_flash.analyze.mode3_export import export_report
 
 
 def test_mode2_sample_counts(mini_db):

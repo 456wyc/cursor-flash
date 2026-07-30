@@ -2,7 +2,7 @@ import type { Messages } from './types'
 
 const en: Messages = {
   app: {
-    title: 'Cursor VSCDB Manager',
+    title: 'Cursor Flash',
   },
   nav: {
     overview: 'Overview',

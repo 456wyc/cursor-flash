@@ -7,7 +7,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 SRC = ROOT / "web" / "dist"
-DST = ROOT / "src" / "cursor_vscdb" / "web_dist"
+DST = ROOT / "src" / "cursor_flash" / "web_dist"
 
 
 def main() -> None:

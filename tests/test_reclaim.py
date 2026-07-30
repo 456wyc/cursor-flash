@@ -1,10 +1,10 @@
 import sqlite3
 from pathlib import Path
 
-from cursor_vscdb.analyze.mode1_index import build_index
-from cursor_vscdb.filter_engine import matching_keys
-from cursor_vscdb.models import Filter
-from cursor_vscdb.reclaim import filter_copy_rebuild, in_place_delete
+from cursor_flash.analyze.mode1_index import build_index
+from cursor_flash.filter_engine import matching_keys
+from cursor_flash.models import Filter
+from cursor_flash.reclaim import filter_copy_rebuild, in_place_delete
 
 
 def test_filter_copy_removes_selected(mini_db, tmp_path):

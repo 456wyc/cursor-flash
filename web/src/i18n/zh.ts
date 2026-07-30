@@ -2,7 +2,7 @@ import type { Messages } from './types'
 
 const zh: Messages = {
   app: {
-    title: 'Cursor VSCDB 管理器',
+    title: 'Cursor Flash',
   },
   nav: {
     overview: '总览',

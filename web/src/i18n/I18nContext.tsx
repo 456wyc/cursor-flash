@@ -3,7 +3,7 @@ import en from './en'
 import zh from './zh'
 import type { Locale, Messages } from './types'
 
-const STORAGE_KEY = 'cursor-vscdb.locale'
+const STORAGE_KEY = 'cursor-flash.locale'
 
 const catalogs: Record<Locale, Messages> = { zh, en }
 

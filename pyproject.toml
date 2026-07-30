@@ -3,7 +3,7 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "cursor-vscdb"
+name = "cursor-flash"
 version = "0.1.0"
 description = "Inspect and selectively reclaim Cursor state.vscdb disk space"
 readme = "README.md"
@@ -21,11 +21,11 @@ dev = ["pytest>=8.0", "httpx>=0.27"]
 desktop = ["pywebview>=5.0"]
 
 [project.scripts]
-vscdb = "cursor_vscdb.cli:app"
-vscdb-desktop = "cursor_vscdb.desktop:app"
+cursor-flash = "cursor_flash.cli:app"
+cursor-flash-desktop = "cursor_flash.desktop:app"
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/cursor_vscdb"]
+packages = ["src/cursor_flash"]
 
 [tool.pytest.ini_options]
 pythonpath = ["src"]

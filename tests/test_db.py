@@ -1,6 +1,6 @@
 import sqlite3
 
-from cursor_vscdb.db import connect_readonly, list_tables
+from cursor_flash.db import connect_readonly, list_tables
 
 
 def test_connect_readonly_lists_tables(mini_db):

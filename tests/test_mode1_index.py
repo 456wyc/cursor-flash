@@ -1,7 +1,7 @@
 from pathlib import Path
 import sqlite3
 
-from cursor_vscdb.analyze.mode1_index import build_index, category_stats
+from cursor_flash.analyze.mode1_index import build_index, category_stats
 
 
 def test_build_index_counts(mini_db, tmp_path):

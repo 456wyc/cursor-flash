@@ -2,14 +2,14 @@ import time
 
 from fastapi.testclient import TestClient
 
-from cursor_vscdb.api.app import create_app
-from cursor_vscdb.models import SafetyLevel
-from cursor_vscdb.service import AppContext
+from cursor_flash.api.app import create_app
+from cursor_flash.models import SafetyLevel
+from cursor_flash.service import AppContext
 
 
 def test_status_and_scan(mini_db, tmp_path, monkeypatch):
-    monkeypatch.setattr("cursor_vscdb.service.is_cursor_running", lambda: False)
-    monkeypatch.setattr("cursor_vscdb.process_win.is_cursor_running", lambda: False)
+    monkeypatch.setattr("cursor_flash.service.is_cursor_running", lambda: False)
+    monkeypatch.setattr("cursor_flash.process_win.is_cursor_running", lambda: False)
     ctx = AppContext(
         db_path=mini_db,
         index_path=tmp_path / "index.sqlite",

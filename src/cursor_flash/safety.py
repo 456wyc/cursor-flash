@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from cursor_vscdb.models import SafetyLevel
-from cursor_vscdb.process_win import is_cursor_running
+from cursor_flash.models import SafetyLevel
+from cursor_flash.process_win import is_cursor_running
 
 
 class SafetyError(RuntimeError):

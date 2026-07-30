@@ -5,12 +5,12 @@ from typing import Optional
 
 import typer
 
-from cursor_vscdb.analyze.mode1_index import category_stats, composer_stats
-from cursor_vscdb.models import Filter, SafetyLevel
-from cursor_vscdb.paths import default_backup_dir, default_index_path, default_state_vscdb
-from cursor_vscdb.service import AppContext, apply_filter_copy, export, get_status, preview_clean, run_scan
+from cursor_flash.analyze.mode1_index import category_stats, composer_stats
+from cursor_flash.models import Filter, SafetyLevel
+from cursor_flash.paths import default_backup_dir, default_index_path, default_state_vscdb
+from cursor_flash.service import AppContext, apply_filter_copy, export, get_status, preview_clean, run_scan
 
-app = typer.Typer(add_completion=False, help="Cursor state.vscdb manager")
+app = typer.Typer(add_completion=False, help="Cursor Flash — manage Cursor state.vscdb")
 
 
 def _ctx(

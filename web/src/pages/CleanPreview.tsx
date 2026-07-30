@@ -14,7 +14,7 @@ import {
 import { useFilter } from '../FilterContext'
 import { useI18n } from '../i18n/I18nContext'
 
-const DEFAULT_DEST = 'E:/cursor-vscdb-tool/new-state.vscdb'
+const DEFAULT_DEST = 'E:/cursor-flash/new-state.vscdb'
 
 export default function CleanPreview() {
   const { t, describeCategory } = useI18n()

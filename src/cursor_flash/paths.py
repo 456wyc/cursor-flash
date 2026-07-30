@@ -13,11 +13,11 @@ def default_state_vscdb() -> Path:
 
 def default_tool_dir() -> Path:
     # Prefer non-C if E: exists
-    e = Path("E:/cursor-vscdb-tool")
+    e = Path("E:/cursor-flash")
     if Path("E:/").exists():
         return e
     local = os.environ.get("LOCALAPPDATA") or str(Path.home())
-    return Path(local) / "cursor-vscdb-tool"
+    return Path(local) / "cursor-flash"
 
 
 def default_index_path() -> Path:

@@ -8,11 +8,11 @@ from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
-from cursor_vscdb.analyze.mode1_index import category_stats, composer_detail, composer_stats
-from cursor_vscdb.jobs import create_job, get_job, run_in_background
-from cursor_vscdb.models import Filter, SafetyLevel
-from cursor_vscdb.service import AppContext, apply_filter_copy, export, get_status, preview_clean, run_scan
-from cursor_vscdb.web_static import resolve_web_dist
+from cursor_flash.analyze.mode1_index import category_stats, composer_detail, composer_stats
+from cursor_flash.jobs import create_job, get_job, run_in_background
+from cursor_flash.models import Filter, SafetyLevel
+from cursor_flash.service import AppContext, apply_filter_copy, export, get_status, preview_clean, run_scan
+from cursor_flash.web_static import resolve_web_dist
 
 
 class FilterIn(BaseModel):
@@ -46,7 +46,7 @@ def _mount_spa(app: FastAPI, dist: Path) -> None:
 
 
 def create_app(ctx: AppContext, *, serve_web: bool = True) -> FastAPI:
-    app = FastAPI(title="cursor-vscdb")
+    app = FastAPI(title="cursor-flash")
     app.add_middleware(
         CORSMiddleware,
         allow_origins=["*"],
@@ -170,7 +170,7 @@ def create_app(ctx: AppContext, *, serve_web: bool = True) -> FastAPI:
 
 
 def app_factory() -> FastAPI:
-    from cursor_vscdb.paths import default_backup_dir, default_index_path, default_state_vscdb
+    from cursor_flash.paths import default_backup_dir, default_index_path, default_state_vscdb
 
     ctx = AppContext(
         db_path=default_state_vscdb(),

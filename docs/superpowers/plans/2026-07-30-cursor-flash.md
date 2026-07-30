@@ -1,14 +1,14 @@
-# Cursor vscdb Manager Implementation Plan
+# Cursor Flash Implementation Plan
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Build a Python Core + FastAPI + React + Typer CLI tool to inspect Cursor `state.vscdb`, filter by category/composer/time, and reclaim disk space via cross-disk filter-copy rebuild (default) or in-place DELETE+VACUUM.
 
-**Architecture:** Shared `cursor_vscdb` Core exposes catalog, analyze (Mode1 index / Mode2 live / Mode3 export), filter, safety, backup, and reclaim. FastAPI and Typer call the same service functions. React talks only to the API. Long work uses in-process jobs polled by id.
+**Architecture:** Shared `cursor_flash` Core exposes catalog, analyze (Mode1 index / Mode2 live / Mode3 export), filter, safety, backup, and reclaim. FastAPI and Typer call the same service functions. React talks only to the API. Long work uses in-process jobs polled by id.
 
 **Tech Stack:** Python 3.11+, sqlite3, FastAPI, Uvicorn, Typer, pytest; React + Vite + TypeScript; Windows-first paths/process checks.
 
-**Spec:** `docs/superpowers/specs/2026-07-30-cursor-vscdb-manager-design.md`
+**Spec:** `docs/superpowers/specs/2026-07-30-cursor-flash-design.md`
 
 ---
 
@@ -19,7 +19,7 @@ cursor-flash/
   pyproject.toml
   README.md
   .gitignore
-  src/cursor_vscdb/
+  src/cursor_flash/
     __init__.py
     catalog.py          # key prefix → category + risk
     models.py           # Filter, Status, Stats dataclasses
@@ -63,7 +63,7 @@ cursor-flash/
 **Files:**
 - Create: `pyproject.toml`
 - Create: `.gitignore`
-- Create: `src/cursor_vscdb/__init__.py`
+- Create: `src/cursor_flash/__init__.py`
 - Create: `README.md`
 - Create: `tests/conftest.py`
 
@@ -75,7 +75,7 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "cursor-vscdb"
+name = "cursor-flash"
 version = "0.1.0"
 description = "Inspect and selectively reclaim Cursor state.vscdb disk space"
 readme = "README.md"
@@ -92,10 +92,10 @@ dependencies = [
 dev = ["pytest>=8.0", "httpx>=0.27"]
 
 [project.scripts]
-vscdb = "cursor_vscdb.cli:app"
+cursor-flash = "cursor_flash.cli:app"
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/cursor_vscdb"]
+packages = ["src/cursor_flash"]
 
 [tool.pytest.ini_options]
 pythonpath = ["src"]
@@ -121,14 +121,14 @@ web/dist/
 
 - [ ] **Step 3: Create package init and README stub**
 
-`src/cursor_vscdb/__init__.py`:
+`src/cursor_flash/__init__.py`:
 ```python
 __version__ = "0.1.0"
 ```
 
 `README.md`:
 ```markdown
-# cursor-vscdb
+# cursor-flash
 
 Inspect and selectively clean Cursor `state.vscdb`.
 
@@ -139,8 +139,8 @@ python -m venv .venv
 .venv\Scripts\activate
 pip install -e ".[dev]"
 pytest
-vscdb status
-uvicorn cursor_vscdb.api.app:app --reload --port 8787
+cursor-flash status
+uvicorn cursor_flash.api.app:app --reload --port 8787
 ```
 
 Then open the React app in `web/` (see Task 12).
@@ -227,8 +227,8 @@ Expected: `no tests ran` or 0 passed (no collection errors).
 - [ ] **Step 6: Commit**
 
 ```bash
-git add pyproject.toml .gitignore src/cursor_vscdb/__init__.py README.md tests/conftest.py
-git commit -m "chore: scaffold cursor-vscdb Python project"
+git add pyproject.toml .gitignore src/cursor_flash/__init__.py README.md tests/conftest.py
+git commit -m "chore: scaffold cursor-flash Python project"
 ```
 
 ---
@@ -236,13 +236,13 @@ git commit -m "chore: scaffold cursor-vscdb Python project"
 ### Task 2: Catalog — key prefix classification
 
 **Files:**
-- Create: `src/cursor_vscdb/catalog.py`
+- Create: `src/cursor_flash/catalog.py`
 - Create: `tests/test_catalog.py`
 
 - [ ] **Step 1: Write failing tests**
 
 ```python
-from cursor_vscdb.catalog import categorize_key, RISK_HIGH
+from cursor_flash.catalog import categorize_key, RISK_HIGH
 
 
 def test_bubble_id():
@@ -333,7 +333,7 @@ Run: `pytest tests/test_catalog.py -v`
 - [ ] **Step 5: Commit**
 
 ```bash
-git add src/cursor_vscdb/catalog.py tests/test_catalog.py
+git add src/cursor_flash/catalog.py tests/test_catalog.py
 git commit -m "feat: classify state.vscdb key prefixes"
 ```
 
@@ -342,10 +342,10 @@ git commit -m "feat: classify state.vscdb key prefixes"
 ### Task 3: Paths, DB connect, Windows process detection
 
 **Files:**
-- Create: `src/cursor_vscdb/paths.py`
-- Create: `src/cursor_vscdb/db.py`
-- Create: `src/cursor_vscdb/process_win.py`
-- Create: `src/cursor_vscdb/models.py`
+- Create: `src/cursor_flash/paths.py`
+- Create: `src/cursor_flash/db.py`
+- Create: `src/cursor_flash/process_win.py`
+- Create: `src/cursor_flash/models.py`
 - Create: `tests/test_db.py`
 
 - [ ] **Step 1: Write failing tests for readonly open + tables**
@@ -353,7 +353,7 @@ git commit -m "feat: classify state.vscdb key prefixes"
 ```python
 import sqlite3
 
-from cursor_vscdb.db import connect_readonly, list_tables
+from cursor_flash.db import connect_readonly, list_tables
 
 
 def test_connect_readonly_lists_tables(mini_db):
@@ -441,11 +441,11 @@ def default_state_vscdb() -> Path:
 
 def default_tool_dir() -> Path:
     # Prefer non-C if E: exists
-    e = Path("E:/cursor-vscdb-tool")
+    e = Path("E:/cursor-flash")
     if Path("E:/").exists():
         return e
     local = os.environ.get("LOCALAPPDATA") or str(Path.home())
-    return Path(local) / "cursor-vscdb-tool"
+    return Path(local) / "cursor-flash"
 
 
 def default_index_path() -> Path:
@@ -514,7 +514,7 @@ Run: `pytest tests/test_db.py -v`
 - [ ] **Step 5: Commit**
 
 ```bash
-git add src/cursor_vscdb/paths.py src/cursor_vscdb/db.py src/cursor_vscdb/process_win.py src/cursor_vscdb/models.py tests/test_db.py
+git add src/cursor_flash/paths.py src/cursor_flash/db.py src/cursor_flash/process_win.py src/cursor_flash/models.py tests/test_db.py
 git commit -m "feat: add db paths, readonly connect, Cursor process check"
 ```
 
@@ -523,14 +523,14 @@ git commit -m "feat: add db paths, readonly connect, Cursor process check"
 ### Task 4: Mode1 index scanner
 
 **Files:**
-- Create: `src/cursor_vscdb/analyze/__init__.py`
-- Create: `src/cursor_vscdb/analyze/mode1_index.py`
+- Create: `src/cursor_flash/analyze/__init__.py`
+- Create: `src/cursor_flash/analyze/mode1_index.py`
 - Create: `tests/test_mode1_index.py`
 
 - [ ] **Step 1: Write failing test**
 
 ```python
-from cursor_vscdb.analyze.mode1_index import build_index, category_stats
+from cursor_flash.analyze.mode1_index import build_index, category_stats
 
 
 def test_build_index_counts(mini_db, tmp_path):
@@ -556,8 +556,8 @@ import sqlite3
 from dataclasses import dataclass
 from pathlib import Path
 
-from cursor_vscdb.catalog import categorize_key
-from cursor_vscdb.db import connect_readonly
+from cursor_flash.catalog import categorize_key
+from cursor_flash.db import connect_readonly
 
 
 @dataclass
@@ -668,7 +668,7 @@ Run: `pytest tests/test_mode1_index.py -v`
 - [ ] **Step 5: Commit**
 
 ```bash
-git add src/cursor_vscdb/analyze tests/test_mode1_index.py
+git add src/cursor_flash/analyze tests/test_mode1_index.py
 git commit -m "feat: Mode1 index scan and category stats"
 ```
 
@@ -677,16 +677,16 @@ git commit -m "feat: Mode1 index scan and category stats"
 ### Task 5: Filter engine + composer stats
 
 **Files:**
-- Create: `src/cursor_vscdb/filter_engine.py`
+- Create: `src/cursor_flash/filter_engine.py`
 - Create: `tests/test_filter_engine.py`
-- Modify: `src/cursor_vscdb/analyze/mode1_index.py` (add `composer_stats` if not present)
+- Modify: `src/cursor_flash/analyze/mode1_index.py` (add `composer_stats` if not present)
 
 - [ ] **Step 1: Write failing tests**
 
 ```python
-from cursor_vscdb.analyze.mode1_index import build_index
-from cursor_vscdb.filter_engine import estimate_filter, matching_keys
-from cursor_vscdb.models import Filter
+from cursor_flash.analyze.mode1_index import build_index
+from cursor_flash.filter_engine import estimate_filter, matching_keys
+from cursor_flash.models import Filter
 
 
 def test_filter_by_category(mini_db, tmp_path):
@@ -720,7 +720,7 @@ import sqlite3
 from dataclasses import dataclass
 from pathlib import Path
 
-from cursor_vscdb.models import Filter
+from cursor_flash.models import Filter
 
 
 @dataclass
@@ -849,7 +849,7 @@ Run: `pytest tests/test_mode1_index.py tests/test_filter_engine.py -v`
 - [ ] **Step 6: Commit**
 
 ```bash
-git add src/cursor_vscdb/filter_engine.py src/cursor_vscdb/analyze/mode1_index.py tests/test_filter_engine.py tests/test_mode1_index.py
+git add src/cursor_flash/filter_engine.py src/cursor_flash/analyze/mode1_index.py tests/test_filter_engine.py tests/test_mode1_index.py
 git commit -m "feat: filter engine with category, composer, time"
 ```
 
@@ -858,8 +858,8 @@ git commit -m "feat: filter engine with category, composer, time"
 ### Task 6: Mode2 live + Mode3 export
 
 **Files:**
-- Create: `src/cursor_vscdb/analyze/mode2_live.py`
-- Create: `src/cursor_vscdb/analyze/mode3_export.py`
+- Create: `src/cursor_flash/analyze/mode2_live.py`
+- Create: `src/cursor_flash/analyze/mode3_export.py`
 - Create: `tests/test_mode2_mode3.py`
 
 - [ ] **Step 1: Write failing tests**
@@ -868,9 +868,9 @@ git commit -m "feat: filter engine with category, composer, time"
 import json
 from pathlib import Path
 
-from cursor_vscdb.analyze.mode1_index import build_index, category_stats
-from cursor_vscdb.analyze.mode2_live import sample_category_counts
-from cursor_vscdb.analyze.mode3_export import export_report
+from cursor_flash.analyze.mode1_index import build_index, category_stats
+from cursor_flash.analyze.mode2_live import sample_category_counts
+from cursor_flash.analyze.mode3_export import export_report
 
 
 def test_mode2_sample_counts(mini_db):
@@ -899,8 +899,8 @@ from __future__ import annotations
 from collections import Counter
 from pathlib import Path
 
-from cursor_vscdb.catalog import categorize_key
-from cursor_vscdb.db import connect_readonly
+from cursor_flash.catalog import categorize_key
+from cursor_flash.db import connect_readonly
 
 
 def sample_category_counts(source_db: Path, limit_per_scan: int = 50_000) -> dict[str, int]:
@@ -926,7 +926,7 @@ import json
 import shutil
 from pathlib import Path
 
-from cursor_vscdb.analyze.mode1_index import category_stats, composer_stats
+from cursor_flash.analyze.mode1_index import category_stats, composer_stats
 
 
 def export_report(index_path: Path, out_dir: Path) -> Path:
@@ -954,7 +954,7 @@ Run: `pytest tests/test_mode2_mode3.py -v`
 - [ ] **Step 5: Commit**
 
 ```bash
-git add src/cursor_vscdb/analyze/mode2_live.py src/cursor_vscdb/analyze/mode3_export.py tests/test_mode2_mode3.py
+git add src/cursor_flash/analyze/mode2_live.py src/cursor_flash/analyze/mode3_export.py tests/test_mode2_mode3.py
 git commit -m "feat: Mode2 live sample counts and Mode3 export report"
 ```
 
@@ -963,8 +963,8 @@ git commit -m "feat: Mode2 live sample counts and Mode3 export report"
 ### Task 7: Safety gate + backup
 
 **Files:**
-- Create: `src/cursor_vscdb/safety.py`
-- Create: `src/cursor_vscdb/backup.py`
+- Create: `src/cursor_flash/safety.py`
+- Create: `src/cursor_flash/backup.py`
 - Create: `tests/test_safety.py`
 
 - [ ] **Step 1: Write failing tests**
@@ -972,24 +972,24 @@ git commit -m "feat: Mode2 live sample counts and Mode3 export report"
 ```python
 import pytest
 
-from cursor_vscdb.backup import backup_file
-from cursor_vscdb.models import SafetyLevel
-from cursor_vscdb.safety import SafetyError, assert_can_write
+from cursor_flash.backup import backup_file
+from cursor_flash.models import SafetyLevel
+from cursor_flash.safety import SafetyError, assert_can_write
 
 
 def test_level_b_blocks_when_cursor_running(monkeypatch):
-    monkeypatch.setattr("cursor_vscdb.safety.is_cursor_running", lambda: True)
+    monkeypatch.setattr("cursor_flash.safety.is_cursor_running", lambda: True)
     with pytest.raises(SafetyError):
         assert_can_write(SafetyLevel.B, backup_provided=True)
 
 
 def test_level_b_allows_when_closed(monkeypatch):
-    monkeypatch.setattr("cursor_vscdb.safety.is_cursor_running", lambda: False)
+    monkeypatch.setattr("cursor_flash.safety.is_cursor_running", lambda: False)
     assert_can_write(SafetyLevel.B, backup_provided=False)  # backup optional at B
 
 
 def test_level_a_requires_backup(monkeypatch):
-    monkeypatch.setattr("cursor_vscdb.safety.is_cursor_running", lambda: False)
+    monkeypatch.setattr("cursor_flash.safety.is_cursor_running", lambda: False)
     with pytest.raises(SafetyError):
         assert_can_write(SafetyLevel.A, backup_provided=False)
 
@@ -1009,8 +1009,8 @@ def test_backup_copies(mini_db, tmp_path):
 ```python
 from __future__ import annotations
 
-from cursor_vscdb.models import SafetyLevel
-from cursor_vscdb.process_win import is_cursor_running
+from cursor_flash.models import SafetyLevel
+from cursor_flash.process_win import is_cursor_running
 
 
 class SafetyError(RuntimeError):
@@ -1055,7 +1055,7 @@ Run: `pytest tests/test_safety.py -v`
 - [ ] **Step 5: Commit**
 
 ```bash
-git add src/cursor_vscdb/safety.py src/cursor_vscdb/backup.py tests/test_safety.py
+git add src/cursor_flash/safety.py src/cursor_flash/backup.py tests/test_safety.py
 git commit -m "feat: safety gate and file backup"
 ```
 
@@ -1064,7 +1064,7 @@ git commit -m "feat: safety gate and file backup"
 ### Task 8: Filter-copy reclaim (default) + in-place delete/vacuum
 
 **Files:**
-- Create: `src/cursor_vscdb/reclaim.py`
+- Create: `src/cursor_flash/reclaim.py`
 - Create: `tests/test_reclaim.py`
 
 - [ ] **Step 1: Write failing test for filter-copy**
@@ -1073,10 +1073,10 @@ git commit -m "feat: safety gate and file backup"
 import sqlite3
 from pathlib import Path
 
-from cursor_vscdb.analyze.mode1_index import build_index
-from cursor_vscdb.filter_engine import matching_keys
-from cursor_vscdb.models import Filter
-from cursor_vscdb.reclaim import filter_copy_rebuild, in_place_delete
+from cursor_flash.analyze.mode1_index import build_index
+from cursor_flash.filter_engine import matching_keys
+from cursor_flash.models import Filter
+from cursor_flash.reclaim import filter_copy_rebuild, in_place_delete
 
 
 def test_filter_copy_removes_selected(mini_db, tmp_path):
@@ -1241,7 +1241,7 @@ Run: `pytest tests/test_reclaim.py -v`
 - [ ] **Step 6: Commit**
 
 ```bash
-git add src/cursor_vscdb/reclaim.py tests/test_reclaim.py
+git add src/cursor_flash/reclaim.py tests/test_reclaim.py
 git commit -m "feat: filter-copy rebuild and in-place delete/vacuum"
 ```
 
@@ -1250,19 +1250,19 @@ git commit -m "feat: filter-copy rebuild and in-place delete/vacuum"
 ### Task 9: Jobs + service facade
 
 **Files:**
-- Create: `src/cursor_vscdb/jobs.py`
-- Create: `src/cursor_vscdb/service.py`
+- Create: `src/cursor_flash/jobs.py`
+- Create: `src/cursor_flash/service.py`
 - Create: `tests/test_service.py`
 
 - [ ] **Step 1: Write failing test**
 
 ```python
-from cursor_vscdb.models import Filter, SafetyLevel
-from cursor_vscdb.service import AppContext, preview_clean, run_scan
+from cursor_flash.models import Filter, SafetyLevel
+from cursor_flash.service import AppContext, preview_clean, run_scan
 
 
 def test_scan_and_preview(mini_db, tmp_path, monkeypatch):
-    monkeypatch.setattr("cursor_vscdb.service.is_cursor_running", lambda: False)
+    monkeypatch.setattr("cursor_flash.service.is_cursor_running", lambda: False)
     ctx = AppContext(
         db_path=mini_db,
         index_path=tmp_path / "index.sqlite",
@@ -1334,15 +1334,15 @@ from __future__ import annotations
 from dataclasses import dataclass
 from pathlib import Path
 
-from cursor_vscdb.analyze.mode1_index import build_index, category_stats, composer_stats, is_index_stale
-from cursor_vscdb.analyze.mode3_export import export_report
-from cursor_vscdb.backup import backup_file
-from cursor_vscdb.db import file_size
-from cursor_vscdb.filter_engine import FilterEstimate, estimate_filter, matching_keys
-from cursor_vscdb.models import DbStatus, Filter, SafetyLevel
-from cursor_vscdb.process_win import is_cursor_running
-from cursor_vscdb.reclaim import filter_copy_rebuild, replace_db_atomic
-from cursor_vscdb.safety import assert_can_write
+from cursor_flash.analyze.mode1_index import build_index, category_stats, composer_stats, is_index_stale
+from cursor_flash.analyze.mode3_export import export_report
+from cursor_flash.backup import backup_file
+from cursor_flash.db import file_size
+from cursor_flash.filter_engine import FilterEstimate, estimate_filter, matching_keys
+from cursor_flash.models import DbStatus, Filter, SafetyLevel
+from cursor_flash.process_win import is_cursor_running
+from cursor_flash.reclaim import filter_copy_rebuild, replace_db_atomic
+from cursor_flash.safety import assert_can_write
 
 
 @dataclass
@@ -1419,7 +1419,7 @@ Run: `pytest tests/test_service.py -v`
 - [ ] **Step 4: Commit**
 
 ```bash
-git add src/cursor_vscdb/jobs.py src/cursor_vscdb/service.py tests/test_service.py
+git add src/cursor_flash/jobs.py src/cursor_flash/service.py tests/test_service.py
 git commit -m "feat: jobs registry and service facade"
 ```
 
@@ -1428,8 +1428,8 @@ git commit -m "feat: jobs registry and service facade"
 ### Task 10: FastAPI
 
 **Files:**
-- Create: `src/cursor_vscdb/api/__init__.py`
-- Create: `src/cursor_vscdb/api/app.py`
+- Create: `src/cursor_flash/api/__init__.py`
+- Create: `src/cursor_flash/api/app.py`
 - Create: `tests/test_api.py`
 
 - [ ] **Step 1: Write API test with TestClient**
@@ -1439,14 +1439,14 @@ from pathlib import Path
 
 from fastapi.testclient import TestClient
 
-from cursor_vscdb.api.app import create_app
-from cursor_vscdb.models import SafetyLevel
-from cursor_vscdb.service import AppContext
+from cursor_flash.api.app import create_app
+from cursor_flash.models import SafetyLevel
+from cursor_flash.service import AppContext
 
 
 def test_status_and_scan(mini_db, tmp_path, monkeypatch):
-    monkeypatch.setattr("cursor_vscdb.service.is_cursor_running", lambda: False)
-    monkeypatch.setattr("cursor_vscdb.process_win.is_cursor_running", lambda: False)
+    monkeypatch.setattr("cursor_flash.service.is_cursor_running", lambda: False)
+    monkeypatch.setattr("cursor_flash.process_win.is_cursor_running", lambda: False)
     ctx = AppContext(
         db_path=mini_db,
         index_path=tmp_path / "index.sqlite",
@@ -1481,10 +1481,10 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 
-from cursor_vscdb.analyze.mode1_index import category_stats, composer_stats
-from cursor_vscdb.jobs import create_job, get_job, run_in_background
-from cursor_vscdb.models import Filter, SafetyLevel
-from cursor_vscdb.service import AppContext, apply_filter_copy, export, get_status, preview_clean, run_scan
+from cursor_flash.analyze.mode1_index import category_stats, composer_stats
+from cursor_flash.jobs import create_job, get_job, run_in_background
+from cursor_flash.models import Filter, SafetyLevel
+from cursor_flash.service import AppContext, apply_filter_copy, export, get_status, preview_clean, run_scan
 
 
 class FilterIn(BaseModel):
@@ -1497,7 +1497,7 @@ class FilterIn(BaseModel):
 
 
 def create_app(ctx: AppContext) -> FastAPI:
-    app = FastAPI(title="cursor-vscdb")
+    app = FastAPI(title="cursor-flash")
     app.add_middleware(
         CORSMiddleware,
         allow_origins=["*"],
@@ -1591,7 +1591,7 @@ def create_app(ctx: AppContext) -> FastAPI:
 
 # default app for uvicorn — uses default paths
 def app_factory() -> FastAPI:
-    from cursor_vscdb.paths import default_backup_dir, default_index_path, default_state_vscdb
+    from cursor_flash.paths import default_backup_dir, default_index_path, default_state_vscdb
 
     ctx = AppContext(
         db_path=default_state_vscdb(),
@@ -1614,7 +1614,7 @@ Note: TestClient may need a short sleep loop; if flaky, call `run_scan` synchron
 - [ ] **Step 4: Commit**
 
 ```bash
-git add src/cursor_vscdb/api tests/test_api.py
+git add src/cursor_flash/api tests/test_api.py
 git commit -m "feat: FastAPI status, scan, stats, preview, rebuild"
 ```
 
@@ -1623,7 +1623,7 @@ git commit -m "feat: FastAPI status, scan, stats, preview, rebuild"
 ### Task 11: Typer CLI
 
 **Files:**
-- Create: `src/cursor_vscdb/cli.py`
+- Create: `src/cursor_flash/cli.py`
 - Create: `tests/test_cli.py`
 
 - [ ] **Step 1: Implement CLI**
@@ -1636,10 +1636,10 @@ from typing import Optional
 
 import typer
 
-from cursor_vscdb.models import Filter, SafetyLevel
-from cursor_vscdb.paths import default_backup_dir, default_index_path, default_state_vscdb
-from cursor_vscdb.service import AppContext, apply_filter_copy, export, get_status, preview_clean, run_scan
-from cursor_vscdb.analyze.mode1_index import category_stats, composer_stats
+from cursor_flash.models import Filter, SafetyLevel
+from cursor_flash.paths import default_backup_dir, default_index_path, default_state_vscdb
+from cursor_flash.service import AppContext, apply_filter_copy, export, get_status, preview_clean, run_scan
+from cursor_flash.analyze.mode1_index import category_stats, composer_stats
 
 app = typer.Typer(add_completion=False, help="Cursor state.vscdb manager")
 
@@ -1742,7 +1742,7 @@ if __name__ == "__main__":
 - [ ] **Step 2: Manual smoke on fixture**
 
 ```bash
-vscdb status --db path\to\mini.vscdb --index path\to\index.sqlite
+cursor-flash status --db path\to\mini.vscdb --index path\to\index.sqlite
 ```
 (Or invoke via `python -c` / pytest CliRunner.)
 
@@ -1751,7 +1751,7 @@ Add `tests/test_cli.py` using `typer.testing.CliRunner` for `status` on `mini_db
 - [ ] **Step 3: Commit**
 
 ```bash
-git add src/cursor_vscdb/cli.py tests/test_cli.py
+git add src/cursor_flash/cli.py tests/test_cli.py
 git commit -m "feat: Typer CLI status/scan/list/clean/export"
 ```
 
@@ -1845,7 +1845,7 @@ export async function previewClean(body: unknown) {
 Implement simple hash or react-router pages matching spec nav: Overview, Categories, Composers, Time, Clean Preview, Settings, Export.  
 Overview shows size GB, cursor_running, scan button + job poll.  
 Categories/Composers: checkbox tables feeding shared filter state (React context).  
-Clean Preview: calls preview then confirms rebuild with `dest_db` path input (default `E:/cursor-vscdb-tool/new-state.vscdb`) and `replace_original` checkbox default false.
+Clean Preview: calls preview then confirms rebuild with `dest_db` path input (default `E:/cursor-flash/new-state.vscdb`) and `replace_original` checkbox default false.
 
 Keep styling readable (high contrast); avoid purple-gradient AI look per project UI rules — use a restrained utility CSS file.
 
@@ -1853,7 +1853,7 @@ Keep styling readable (high contrast); avoid purple-gradient AI look per project
 
 ```bash
 # terminal 1
-uvicorn cursor_vscdb.api.app:app --port 8787
+uvicorn cursor_flash.api.app:app --port 8787
 # terminal 2
 cd web && npm run dev
 ```
@@ -1923,7 +1923,7 @@ git commit -m "docs: usage, safety, and reclaim workflow"
 
 ## Execution Handoff
 
-Plan complete and saved to `docs/superpowers/plans/2026-07-30-cursor-vscdb-manager.md`.
+Plan complete and saved to `docs/superpowers/plans/2026-07-30-cursor-flash.md`.
 
 **Two execution options:**
 

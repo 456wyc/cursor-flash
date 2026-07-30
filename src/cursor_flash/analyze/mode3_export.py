@@ -4,7 +4,7 @@ import json
 import shutil
 from pathlib import Path
 
-from cursor_vscdb.analyze.mode1_index import category_stats, composer_stats
+from cursor_flash.analyze.mode1_index import category_stats, composer_stats
 
 
 def export_report(index_path: Path, out_dir: Path) -> Path:

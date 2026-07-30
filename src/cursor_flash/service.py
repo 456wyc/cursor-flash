@@ -3,15 +3,15 @@ from __future__ import annotations
 from dataclasses import dataclass
 from pathlib import Path
 
-from cursor_vscdb.analyze.mode1_index import build_index, is_index_stale
-from cursor_vscdb.analyze.mode3_export import export_report
-from cursor_vscdb.backup import backup_file
-from cursor_vscdb.db import file_size
-from cursor_vscdb.filter_engine import FilterEstimate, estimate_filter, matching_keys
-from cursor_vscdb.models import DbStatus, Filter, SafetyLevel
-from cursor_vscdb.process_win import is_cursor_running
-from cursor_vscdb.reclaim import filter_copy_rebuild, replace_db_atomic
-from cursor_vscdb.safety import assert_can_write
+from cursor_flash.analyze.mode1_index import build_index, is_index_stale
+from cursor_flash.analyze.mode3_export import export_report
+from cursor_flash.backup import backup_file
+from cursor_flash.db import file_size
+from cursor_flash.filter_engine import FilterEstimate, estimate_filter, matching_keys
+from cursor_flash.models import DbStatus, Filter, SafetyLevel
+from cursor_flash.process_win import is_cursor_running
+from cursor_flash.reclaim import filter_copy_rebuild, replace_db_atomic
+from cursor_flash.safety import assert_can_write
 
 
 @dataclass

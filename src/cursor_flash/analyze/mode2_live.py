@@ -3,8 +3,8 @@ from __future__ import annotations
 from collections import Counter
 from pathlib import Path
 
-from cursor_vscdb.catalog import categorize_key
-from cursor_vscdb.db import connect_readonly
+from cursor_flash.catalog import categorize_key
+from cursor_flash.db import connect_readonly
 
 
 def sample_category_counts(source_db: Path, limit_per_scan: int = 50_000) -> dict[str, int]:

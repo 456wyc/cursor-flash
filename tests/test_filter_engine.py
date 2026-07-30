@@ -1,6 +1,6 @@
-from cursor_vscdb.analyze.mode1_index import build_index
-from cursor_vscdb.filter_engine import estimate_filter, matching_keys
-from cursor_vscdb.models import Filter
+from cursor_flash.analyze.mode1_index import build_index
+from cursor_flash.filter_engine import estimate_filter, matching_keys
+from cursor_flash.models import Filter
 
 
 def test_filter_by_category(mini_db, tmp_path):

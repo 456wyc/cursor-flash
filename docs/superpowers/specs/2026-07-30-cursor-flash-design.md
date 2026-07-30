@@ -1,4 +1,4 @@
-# Cursor state.vscdb Manager — Design Spec
+# Cursor Flash — Design Spec
 
 **Date:** 2026-07-30  
 **Status:** Ready for user review  
@@ -160,14 +160,14 @@ Filter = {
 ## CLI (minimal)
 
 ```text
-vscdb status
-vscdb scan [--index-dir PATH]
-vscdb list categories|composers [--filter ...]
-vscdb export-report --out PATH
-vscdb clean --preview --categories ... --older-than ...
-vscdb clean --apply  ...   # 受安全档约束
-vscdb rebuild --target PATH
-vscdb vacuum
+cursor-flash status
+cursor-flash scan [--index-dir PATH]
+cursor-flash list categories|composers [--filter ...]
+cursor-flash export-report --out PATH
+cursor-flash clean --preview --categories ... --older-than ...
+cursor-flash clean --apply  ...   # 受安全档约束
+cursor-flash rebuild --target PATH
+cursor-flash vacuum
 ```
 
 ## API (sketch)
@@ -196,7 +196,7 @@ vscdb vacuum
 - **Python 3.11+**：Core、FastAPI、Typer、sqlite3  
 - **React + Vite**：Web UI  
 - **平台**：v1 以 **Windows** 为第一目标（路径/进程检测按 Win 实现）；路径解析预留可扩展  
-- **索引/配置**：默认放在可配置目录（建议非系统盘，如 `E:\cursor-vscdb-tool\`）  
+- **索引/配置**：默认放在可配置目录（建议非系统盘，如 `E:\cursor-flash\`）  
 - 日后 Desktop：`pywebview` / Tauri 壳嵌入同一 Web，不重写 Core 
 
 ## Testing Strategy
@@ -211,7 +211,7 @@ vscdb vacuum
 ```text
 cursor-flash/
   docs/superpowers/specs/
-  src/cursor_vscdb/     # Core + FastAPI + Typer 入口
+  src/cursor_flash/     # Core + FastAPI + Typer 入口
   web/                  # React + Vite
   tests/
   README.md

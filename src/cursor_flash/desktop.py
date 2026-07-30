@@ -9,11 +9,11 @@ from typing import Optional
 import typer
 import uvicorn
 
-from cursor_vscdb.api.app import create_app
-from cursor_vscdb.models import SafetyLevel
-from cursor_vscdb.paths import default_backup_dir, default_index_path, default_state_vscdb
-from cursor_vscdb.service import AppContext
-from cursor_vscdb.web_static import resolve_web_dist
+from cursor_flash.api.app import create_app
+from cursor_flash.models import SafetyLevel
+from cursor_flash.paths import default_backup_dir, default_index_path, default_state_vscdb
+from cursor_flash.service import AppContext
+from cursor_flash.web_static import resolve_web_dist
 
 
 def _free_port() -> int:
@@ -69,13 +69,13 @@ def run_desktop(
     config = uvicorn.Config(app, host=host, port=bind_port, log_level="warning")
     server = uvicorn.Server(config)
 
-    thread = threading.Thread(target=server.run, name="vscdb-uvicorn", daemon=True)
+    thread = threading.Thread(target=server.run, name="cursor-flash-uvicorn", daemon=True)
     thread.start()
     _wait_ready(host, bind_port)
 
     url = f"http://{host}:{bind_port}/"
     webview.create_window(
-        title="Cursor VSCDB Manager",
+        title="Cursor Flash",
         url=url,
         width=width,
         height=height,
@@ -86,7 +86,7 @@ def run_desktop(
     thread.join(timeout=5)
 
 
-app = typer.Typer(add_completion=False, help="Cursor VSCDB desktop shell")
+app = typer.Typer(add_completion=False, help="Cursor Flash desktop shell")
 
 
 @app.callback(invoke_without_command=True)

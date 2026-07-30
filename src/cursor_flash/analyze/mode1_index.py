@@ -4,8 +4,8 @@ import sqlite3
 from dataclasses import dataclass
 from pathlib import Path
 
-from cursor_vscdb.catalog import categorize_key
-from cursor_vscdb.db import connect_readonly
+from cursor_flash.catalog import categorize_key
+from cursor_flash.db import connect_readonly
 
 
 @dataclass

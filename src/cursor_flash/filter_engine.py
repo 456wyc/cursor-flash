@@ -4,7 +4,7 @@ import sqlite3
 from dataclasses import dataclass
 from pathlib import Path
 
-from cursor_vscdb.models import Filter
+from cursor_flash.models import Filter
 
 
 @dataclass

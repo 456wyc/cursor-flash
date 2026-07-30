@@ -1,4 +1,4 @@
-from cursor_vscdb.analyze.mode1_index import build_index, composer_detail
+from cursor_flash.analyze.mode1_index import build_index, composer_detail
 
 
 def test_composer_detail_breakdown(mini_db, tmp_path):

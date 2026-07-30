@@ -1,10 +1,10 @@
 from typer.testing import CliRunner
 
-from cursor_vscdb.cli import app
+from cursor_flash.cli import app
 
 
 def test_status(mini_db, tmp_path, monkeypatch):
-    monkeypatch.setattr("cursor_vscdb.service.is_cursor_running", lambda: False)
+    monkeypatch.setattr("cursor_flash.service.is_cursor_running", lambda: False)
     runner = CliRunner()
     result = runner.invoke(
         app,

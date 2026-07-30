@@ -1,4 +1,4 @@
-# cursor-vscdb
+# Cursor Flash
 
 Inspect and selectively clean Cursor `state.vscdb` — the SQLite database that stores chat bubbles, agent cache, composer sessions, and other Cursor global state. When this file grows to tens of GB it can fill your system drive; this tool helps you **see what is using space** and **reclaim disk safely** via filter-copy rebuild.
 
@@ -9,15 +9,15 @@ Inspect and selectively clean Cursor `state.vscdb` — the SQLite database that 
 - **Preview** — estimate rows and bytes that match a filter before any write.
 - **Clean / reclaim** — copy *kept* rows into a new database on another drive (default strategy when C: is full), optionally replace the original after verification.
 
-The web UI (React) and CLI (`vscdb`) share the same Python core and FastAPI service.
+The web UI (React) and CLI (`cursor-flash`) share the same Python core and FastAPI service.
 
 ## Default paths
 
 | Resource | Default location |
 |----------|------------------|
 | Live Cursor DB | `%APPDATA%\Cursor\User\globalStorage\state.vscdb` |
-| Tool directory (index + backups) | `E:\cursor-vscdb-tool\` when drive `E:` exists |
-| Tool directory (fallback) | `%LOCALAPPDATA%\cursor-vscdb-tool\` (or home) |
+| Tool directory (index + backups) | `E:\cursor-flash\` when drive `E:` exists |
+| Tool directory (fallback) | `%LOCALAPPDATA%\cursor-flash\` (or home) |
 | Index database | `<tool-dir>\index.sqlite` |
 | Backups | `<tool-dir>\backups\` |
 
@@ -48,23 +48,23 @@ Replacing while Cursor is open or without a backup can corrupt your session stor
 
 When system disk space is tight, do **not** rely on in-place `DELETE + VACUUM` on C:. Use cross-disk filter-copy rebuild:
 
-1. **Scan** — build/update the index (`vscdb scan` or web Overview → Scan).
+1. **Scan** — build/update the index (`cursor-flash scan` or web Overview → Scan).
 2. **Filter** — choose categories, composers, and/or time ranges (web pages or CLI flags).
-3. **Preview** — confirm row count and estimated bytes (`vscdb clean --preview …` or Clean Preview page).
-4. **Rebuild to E:** — write a new DB to a non-C path, e.g. `E:\cursor-vscdb-tool\new-state.vscdb` (`--dest` / API `dest_db`). Do **not** replace the original yet.
+3. **Preview** — confirm row count and estimated bytes (`cursor-flash clean --preview …` or Clean Preview page).
+4. **Rebuild to E:** — write a new DB to a non-C path, e.g. `E:\cursor-flash\new-state.vscdb` (`--dest` / API `dest_db`). Do **not** replace the original yet.
 5. **Close Cursor** — exit the application entirely.
 6. **Replace** — run apply with `--replace` (or enable “Replace original” in the UI) **only after** backup + Cursor closed.
 
 Example CLI sequence:
 
 ```bash
-vscdb status
-vscdb scan
-vscdb list categories
-vscdb clean --preview --categories bubbleId
-vscdb clean --apply --categories bubbleId --dest E:/cursor-vscdb-tool/new-state.vscdb
+cursor-flash status
+cursor-flash scan
+cursor-flash list categories
+cursor-flash clean --preview --categories bubbleId
+cursor-flash clean --apply --categories bubbleId --dest E:/cursor-flash/new-state.vscdb
 # Close Cursor, verify backup exists, then:
-vscdb clean --apply --categories bubbleId --dest E:/cursor-vscdb-tool/new-state.vscdb --replace
+cursor-flash clean --apply --categories bubbleId --dest E:/cursor-flash/new-state.vscdb --replace
 ```
 
 ## Development setup
@@ -74,19 +74,19 @@ python -m venv .venv
 .venv\Scripts\activate
 pip install -e ".[dev]"
 pytest
-uvicorn cursor_vscdb.api.app:app --host 127.0.0.1 --port 8787
+uvicorn cursor_flash.api.app:app --host 127.0.0.1 --port 8787
 cd web && npm install && npm run dev
 ```
 
 ### Useful commands after install
 
-CLI (available as `vscdb` once installed):
+CLI (available as `cursor-flash` once installed):
 
 ```bash
-vscdb status
-vscdb scan
-vscdb list categories
-vscdb clean --preview --categories bubbleId
+cursor-flash status
+cursor-flash scan
+cursor-flash list categories
+cursor-flash clean --preview --categories bubbleId
 ```
 
 API base URL when running locally: `http://127.0.0.1:8787` (endpoints under `/api/…`).
@@ -103,7 +103,7 @@ python scripts/sync_web_dist.py   # optional: copy into package web_dist/
 After a production build, a single uvicorn process can serve both API and UI:
 
 ```bash
-uvicorn cursor_vscdb.api.app:app --host 127.0.0.1 --port 8787
+uvicorn cursor_flash.api.app:app --host 127.0.0.1 --port 8787
 # open http://127.0.0.1:8787/
 ```
 
@@ -115,7 +115,7 @@ The desktop shell is a thin **pywebview** window around the same FastAPI + React
 pip install -e ".[desktop]"
 cd web && npm install && npm run build
 cd .. && python scripts/sync_web_dist.py
-vscdb-desktop
+cursor-flash-desktop
 ```
 
 Options: `--port`, `--width`, `--height`, `--db`, `--index`, `--backup-dir`.
@@ -123,7 +123,7 @@ Options: `--port`, `--width`, `--height`, `--db`, `--index`, `--backup-dir`.
 ## Project layout
 
 ```text
-src/cursor_vscdb/   Python core, FastAPI app, Typer CLI, desktop launcher
+src/cursor_flash/   Python core, FastAPI app, Typer CLI, desktop launcher
 web/                React + Vite dashboard
 scripts/            helpers (sync_web_dist.py)
 tests/              pytest fixtures and integration tests

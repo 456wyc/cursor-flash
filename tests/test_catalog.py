@@ -1,4 +1,4 @@
-from cursor_vscdb.catalog import categorize_key, RISK_HIGH
+from cursor_flash.catalog import categorize_key, RISK_HIGH
 
 
 def test_bubble_id():

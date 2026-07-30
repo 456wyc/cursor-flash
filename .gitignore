@@ -9,7 +9,7 @@ dist/
 *.egg-info/
 node_modules/
 web/dist/
-src/cursor_vscdb/web_dist/
+src/cursor_flash/web_dist/
 .pytest_cache/
 *.vscdb
 !tests/fixtures/*.vscdb

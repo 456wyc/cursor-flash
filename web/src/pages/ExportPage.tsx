@@ -4,7 +4,7 @@ import { useI18n } from '../i18n/I18nContext'
 
 export default function ExportPage() {
   const { t } = useI18n()
-  const [outDir, setOutDir] = useState('E:/cursor-vscdb-tool/export')
+  const [outDir, setOutDir] = useState('E:/cursor-flash/export')
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
